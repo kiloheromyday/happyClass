@@ -1,0 +1,19 @@
+import { createApp } from 'vue';
+import { App } from './app.js';
+import './style.css';
+import './accounts.css';
+import './classroom.css';
+import './analytics.css';
+import './community.css';
+import './engagement.css';
+import './notes.css';
+import './wall.css';
+import './join-codes.css';
+import './courses.css';
+import './teaching.css';
+import './developer.css';
+import './campus.css';
+import './leaves.css';
+import './extensions.css';
+
+createApp(App).mount('#app');

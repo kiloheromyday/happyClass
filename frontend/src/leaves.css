@@ -1,0 +1,44 @@
+.leave-summary { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:12px; margin:25px 0; }
+.leave-summary>div { border:1px solid #e4e8dc; border-radius:13px; background:#fafbf5; padding:19px; display:flex; flex-direction:column; gap:9px; }
+.leave-summary strong { font-size:25px; font-weight:500; color:#617650; }
+.leave-summary span { font-size:11px; color:#8c9781; }
+.leave-summary>div:first-child { background:#fbf5e7; border-color:#eee4cd; }
+.leave-summary>div:first-child strong { color:#a28646; }
+.leave-summary>div:nth-child(3) { background:#f8f0ee; }
+.leave-filters { display:flex; gap:12px; flex-wrap:wrap; margin:20px 0; }
+.leave-filters select { padding:11px 13px; border:1px solid #dce3d4; border-radius:10px; color:#667b56; background:#fffef9; font-size:12px; max-width:100%; min-width:0; }
+.leave-filters select:first-child { flex:1; }
+.leave-editor { padding:25px; background:linear-gradient(140deg,#f0f5e8,#fffef9); border:1px solid #dfe7d5; border-radius:18px; margin:24px 0; }
+.leave-editor h3 { font-size:18px; color:#536e43; margin:0; }
+.leave-private { font-size:10px; color:#92a084; }
+.leave-editor .section-title { flex-wrap:wrap; }
+.leaves-panel textarea { resize:vertical; width:100%; min-height:100px; border:1px solid #dce3d4; border-radius:10px; padding:13px; color:#526749; background:#fffefa; font:inherit; font-size:13px; line-height:1.8; }
+.leaves-panel textarea:focus-visible { outline:2px solid #b0c49e; outline-offset:2px; }
+.leave-request-form { margin-top:24px; }
+.leave-editor-bottom { display:flex; gap:12px; align-items:center; flex-wrap:wrap; justify-content:space-between; }
+.leave-editor-bottom>span { color:#9ba68f; font-size:11px; }
+.leaves-panel .primary-button { margin:0; width:auto; min-height:40px; padding:10px 18px; font-size:12px; }
+.leaves-panel .guide-actions { margin:0; }
+.leave-list { display:grid; gap:16px; }
+.leave-card { padding:23px; border:1px solid #e3e8da; border-left:4px solid var(--dept-color,#81936c); border-radius:16px; background:#fffefa; }
+.leave-card-heading { display:flex; align-items:flex-start; justify-content:space-between; gap:15px; }
+.leave-card-heading h3 { font-size:18px; color:#4b633d; line-height:1.6; margin:13px 0 10px; }
+.leave-status { white-space:nowrap; font-size:11px; border-radius:20px; padding:6px 11px; background:#f0f2ea; color:#8c9681; }
+.leave-status.pending { background:#fbf2dc; color:#a48542; }
+.leave-status.approved { background:#edf4e6; color:#6a8852; }
+.leave-status.rejected { background:#f8ece8; color:#b47b68; }
+.leave-class-info { margin:7px 0; color:#89947f; font-size:11px; line-height:1.8; }
+.leave-reason { margin-top:20px; padding:16px; border-radius:10px; background:#f7f9f1; }
+.leave-reason>span,.leave-reply>span { font-size:10px; color:#8d9b80; }
+.leave-reason p,.leave-reply p { margin:8px 0 0; font-size:13px; color:#617151; white-space:pre-wrap; overflow-wrap:anywhere; line-height:1.9; }
+.leave-reply { margin:14px 0; padding:14px 16px; border-left:2px solid #c5d2b7; background:#fafbf6; }
+.leave-card-footer { border-top:1px solid #edf0e6; margin-top:20px; padding-top:14px; display:flex; justify-content:space-between; align-items:center; gap:12px; flex-wrap:wrap; }
+.leave-card-footer>span { font-size:10px; color:#9ba58f; }
+.leave-card-footer button { font-size:11px; }
+.leave-review-form { background:#f6f8f0; border:1px solid #e1e7d8; border-radius:12px; padding:20px; margin-top:20px; }
+.leave-review-form h4 { color:#647e51; margin:0 0 20px; font-size:15px; }
+.leave-teaching-entry { display:flex; align-items:center; justify-content:space-between; gap:12px; padding:16px 18px; background:#f6f5eb; border:1px solid #e7e6d5; border-radius:12px; margin:20px 0; }
+.leave-teaching-entry>span { color:#93916f; font-size:12px; }
+.leave-teaching-entry button { font-size:11px; }
+.classroom-leave-link { margin:0 0 16px; font-size:11px; }
+@media(max-width:560px) { .leave-summary { gap:8px; } .leave-summary>div { padding:14px 9px; align-items:center; } .leave-summary strong { font-size:23px; } .leave-card,.leave-editor { padding:18px; } .leave-editor .form-pair { grid-template-columns:1fr; gap:0; } .leave-status { padding:6px 8px; font-size:10px; } .leave-card-footer .guide-actions { width:100%; justify-content:flex-end; } .leave-private { line-height:1.7; } }

@@ -1,0 +1,36 @@
+.wall-eyebrow { margin: 0 0 5px; color: #8b9a7c; font-size: 11px; letter-spacing: .1em; }
+.wall-tabs { display: flex; gap: 22px; border-bottom: 1px solid #e1e7d7; margin: 25px 0 18px; }
+.wall-tabs button { border: 0; border-bottom: 2px solid transparent; background: none; padding: 0 0 12px; color: #8a967e; font-size: 13px; }
+.wall-tabs button.active { border-color: #45634e; color: #45634e; }
+.wall-audience { color: #849077; line-height: 1.8; font-size: 11px; margin: 0 0 18px; }
+.wall-compose { background: #f2f5eb; border: 1px solid #e2e8d7; border-radius: 18px; padding: 22px; }
+.buddy-wall-panel textarea { width: 100%; resize: vertical; font: inherit; font-size: 14px; line-height: 1.8; background: #fffefa; border: 1px solid #dce3d2; border-radius: 12px; padding: 13px 15px; color: #3b4a35; }
+.buddy-wall-panel textarea:focus { outline: 3px solid #e1ead8; border-color: #91a77f; }
+.wall-visibility, .wall-actions, .wall-compose-bottom, .wall-toolbar, .wall-message-top, .wall-message-bottom, .wall-delete-confirm { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+.wall-visibility { gap: 20px; font-size: 12px; color: #647952; }
+.wall-visibility label { display: inline-flex; align-items: center; gap: 7px; }
+.wall-visibility input { accent-color: #45634e; }
+.wall-consent-note { margin: 10px 0 16px; font-size: 11px; color: #8a967e; line-height: 1.8; }
+.wall-compose-bottom, .wall-toolbar, .wall-message-top, .wall-message-bottom { justify-content: space-between; }
+.wall-compose-bottom > span { font-size: 11px; }
+.wall-toolbar { margin: 23px 0 18px; }
+.wall-filters { display: flex; gap: 4px; background: #f0f2e9; border-radius: 11px; padding: 4px; }
+.wall-filters button { border: 0; background: none; color: #87937a; border-radius: 8px; padding: 8px 12px; font-size: 11px; }
+.wall-filters button.active { background: #fffefa; color: #516d46; box-shadow: 0 1px 5px #2d3c2410; }
+.wall-message-list { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); align-items: start; gap: 17px; }
+.wall-message-card { padding: 22px; background: #faf8ee; border: 1px solid #ece7d6; border-radius: 16px; min-width: 0; }
+.wall-message-card.source-allowed { background: #f1f5ed; border-color: #e0e8d7; }
+.wall-message-top { color: #9a9e87; font-size: 10px; }
+.wall-author-label { color: #7c896b; font-size: 12px; }
+.wall-message-copy { margin: 20px 0; font-size: 14px; line-height: 1.9; color: #536248; white-space: pre-wrap; overflow-wrap: anywhere; }
+.wall-message-bottom .quiet-button { font-size: 10px; }
+.wall-anonymous-note { color: #a0a38e; font-size: 10px; }
+.wall-source-button { display: inline-flex; align-items: center; gap: 5px; border: 0; background: transparent; padding: 6px 0; font-size: 11px; color: #6b855b; }
+.wall-source-card { background: #fffefa; border: 1px solid #e1e6d9; border-radius: 12px; padding: 17px; margin-top: 16px; }
+.wall-source-card > p { font-size: 12px; color: #839075; line-height: 1.8; overflow-wrap: anywhere; }
+.wall-source-card .buddy-traits { margin: 14px 0 0; }
+.wall-destination { font-size: 11px; color: #9a9e87; margin: 12px 0 0; }
+.wall-edit-form { border-top: 1px solid #e0e6d7; padding-top: 17px; margin-top: 17px; }
+.wall-edit-form .wall-actions { justify-content: flex-end; }
+.wall-delete-confirm { margin-top: 14px; padding-top: 12px; border-top: 1px solid #e6e1d4; font-size: 11px; color: #987c65; }
+@media(max-width: 700px) { .wall-message-list { grid-template-columns: 1fr; } .wall-compose, .wall-message-card { padding: 17px; } .buddy-wall-panel > .section-title { flex-wrap: wrap; } .wall-toolbar { gap: 8px; } }

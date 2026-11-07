@@ -1,0 +1,82 @@
+.classroom-panel { min-width: 0; }
+.classroom-panel h3 { font-size: 15px; line-height: 1.6; margin: 24px 0 16px; color: #43553b; }
+.secondary-button { display: inline-flex; align-items: center; justify-content: center; gap: 7px; min-height: 38px; border: 1px solid #d9e1cf; background: #fffefa; border-radius: 9px; padding: 8px 12px; font-size: 12px; color: var(--primary); white-space: nowrap; line-height: 1.6; }
+.secondary-button:hover:not(:disabled) { background: #eef3e6; border-color: #c3d0b4; }
+.management-tools, .roster-editor { border: 1px solid var(--line); border-radius: 12px; padding: 0 18px; margin: 22px 0; background: #fafbf6; }
+.management-tools summary, .roster-editor summary { position: relative; cursor: pointer; padding: 15px 25px 15px 0; font-size: 13px; color: var(--primary); line-height: 1.7; list-style: none; }
+.management-tools summary::-webkit-details-marker, .roster-editor summary::-webkit-details-marker, .camera-panel summary::-webkit-details-marker { display: none; }
+.management-tools summary::after, .roster-editor summary::after { content: '+'; position: absolute; right: 0; top: 50%; transform: translateY(-50%); font-size: 19px; font-weight: 300; color: #859675; }
+.management-tools[open] summary::after, .roster-editor[open] summary::after { content: '−'; }
+.management-tools[open] summary, .roster-editor[open] summary { border-bottom: 1px solid var(--line); }
+.admin-forms { display: grid; grid-template-columns: 1fr; gap: 24px; padding: 0 0 22px; }
+.admin-forms form+form { border-top: 1px solid var(--line); }
+.admin-forms .primary-button { width: auto; min-width: 130px; }
+.form-pair { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.form-pair .field { min-width: 0; }
+.session-meta { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 16px; padding: 0 0 22px; margin: 2px 0 6px; border-bottom: 1px solid var(--line); font-size: 11px; color: var(--muted); }
+.session-status { display: inline-flex; align-items: center; gap: 5px; border-radius: 6px; padding: 4px 8px; background: #f1f2eb; color: #6b765f; }
+.session-status.ongoing { background: #eaf1e0; color: #547141; }
+.session-status.ongoing::before { content: ''; width: 5px; height: 5px; border-radius: 50%; background: #839d6b; }
+.student-options { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px 16px; margin: 18px 0 22px; max-height: 240px; overflow: auto; }
+.student-options label { display: flex; align-items: center; gap: 8px; font-size: 12px; color: #5f7052; cursor: pointer; overflow-wrap: anywhere; padding: 7px 0; }
+.student-options input, .live-controls input { width: 16px; height: 16px; accent-color: var(--primary); flex-shrink: 0; }
+.roster-editor>.secondary-button { margin-bottom: 18px; }
+.student-feedback { padding: 10px 0 26px; }
+.student-feedback h3 { font-size: 21px; letter-spacing: -.4px; margin-bottom: 7px; }
+.emoji-picker { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 10px; margin: 28px 0 24px; }
+.emoji-picker button { position: relative; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 13px; min-height: 121px; border: 1px solid #e3e7da; border-radius: 14px; padding: 18px 5px 19px; background: #fbfcf7; color: #69745d; font-size: 12px; min-width: 0; }
+.emoji-picker button:hover:not(:disabled) { border-color: #c4d2b4; background: #f2f6e9; box-shadow: 0 5px 15px #4d653b08; }
+.emoji-picker button.chosen { border-color: #839c6e; background: #edf3e3; color: #45613a; box-shadow: 0 0 0 2px #92a97e1a; font-weight: 600; }
+.emotion-selected-dot { position: absolute; bottom: 7px; width: 4px; height: 4px; border-radius: 50%; background: transparent; }
+.chosen .emotion-selected-dot { background: #7a955f; }
+.submit-emotion { max-width: 204px; margin: 0; }
+.metric-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; margin: 24px 0 26px; }
+.metric-grid>div { display: flex; flex-direction: column; gap: 11px; padding: 20px 18px; background: #f0f4e9; border: 1px solid #e5ebda; border-radius: 13px; }
+.metric-grid>div:nth-child(2) { background: #f7f2e7; border-color: #ede6d5; }
+.metric-grid>div:nth-child(3) { background: #f0f2ee; border-color: #e4e7de; }
+.metric-grid>div:nth-child(4) { background: #f2eff5; border-color: #e9e3ee; }
+.metric-grid span { font-size: 11px; color: #637055; }
+.metric-grid strong { font-size: 30px; font-weight: 550; line-height: 1.1; font-variant-numeric: tabular-nums; letter-spacing: -1px; color: #43583a; }
+.metric-grid>div:nth-child(2) strong { color: #8b7447; }
+.metric-grid>div:nth-child(4) strong { color: #83708c; }
+.emotion-bars { display: flex; flex-direction: column; gap: 14px; margin: 22px 0 10px; }
+.emotion-row { display: grid; grid-template-columns: 77px minmax(0, 1fr) 26px; align-items: center; gap: 12px; font-size: 12px; color: #617053; }
+.emotion-name { display: flex; align-items: center; gap: 9px; }
+.emotion-row>strong { text-align: right; font-size: 12px; font-weight: 500; font-variant-numeric: tabular-nums; }
+.bar-track { height: 7px; border-radius: 6px; background: #edf0e6; overflow: hidden; }
+.bar-fill { height: 100%; background: #a6bb91; border-radius: 6px; min-width: 0; transition: width .3s ease; }
+.feedback-history { border-top: 1px solid var(--line); margin-top: 26px; padding-top: 26px; }
+.feedback-history h3 { font-size: 15px; margin: 0; }
+.feedback-history .section-title { margin-bottom: 16px; }
+.feedback-history .table-wrap { margin-top: 0; }
+.empty-note { font-size: 12px; color: var(--muted); padding: 24px 0; margin: 0; }
+.data-note { font-size: 11px; color: var(--muted); line-height: 1.9; margin: 14px 0 0; }
+.camera-panel { border: 1px solid var(--line); border-radius: 12px; background: #fafbf6; margin: 28px 0 0; }
+.camera-panel summary { display: flex; align-items: center; gap: 12px; padding: 17px 18px; list-style: none; cursor: pointer; color: var(--primary); }
+.camera-summary-title { display: inline-flex; align-items: center; gap: 10px; font-size: 13px; font-weight: 500; }
+.camera-summary-note { margin-left: auto; font-size: 10px; color: var(--muted); }
+.camera-panel summary>.ui-icon { color: #829571; transition: transform .18s; }
+.camera-panel[open] summary>.ui-icon { transform: rotate(90deg); }
+.camera-panel[open] summary { border-bottom: 1px solid var(--line); }
+.camera-body { padding: 16px 20px 20px; }
+.camera-body>.muted { margin-top: 0; }
+.camera-settings { display: flex; align-items: center; gap: 20px; flex-wrap: wrap; }
+.camera-settings .field { width: 140px; margin-bottom: 16px; }
+.camera-settings .data-note { margin: 0 0 0 auto; }
+.camera-preview { display: block; max-width: 640px; width: 100%; border-radius: 12px; margin: 6px 0 18px; background: #263429; }
+.camera-actions { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
+.camera-actions .primary-button { width: auto; margin: 0; min-height: 40px; padding: 8px 17px; }
+.camera-actions .secondary-button { min-height: 40px; }
+.upload-button { position: relative; overflow: hidden; display: inline-flex; align-items: center; justify-content: center; gap: 7px; border: 1px dashed #c9d3bd; border-radius: 9px; padding: 9px 13px; min-height: 40px; font-size: 12px; color: var(--primary); cursor: pointer; }
+.upload-button:hover { background: var(--sage); }
+.upload-button input { position: absolute; inset: 0; width: 100%; height: 100%; opacity: 0; cursor: pointer; }
+.upload-button:focus-within { outline: 3px solid #8da17b; outline-offset: 3px; }
+.upload-button.disabled { opacity: .46; cursor: default; }
+.upload-button.disabled:hover { background: transparent; }
+.camera-result { padding: 12px 14px; border-radius: 9px; background: #eaf0df; color: #526944; font-size: 12px; }
+.camera-privacy { margin-top: 18px; }
+.management-tools .password-form { margin-bottom: 22px; }
+@media (max-width: 1120px) { .emoji-picker { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
+@media (max-width: 1000px) and (min-width: 781px) { .form-pair { grid-template-columns: 1fr; gap: 0; } }
+@media (max-width: 780px) { .emoji-picker { grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 7px; } .emoji-picker button { min-height: 109px; padding-top: 14px; } .emoji-picker .mood-face { width: 38px; height: 38px; } .session-meta { font-size: 11px; } }
+@media (max-width: 600px) { .emoji-picker { grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 9px; } .form-pair { grid-template-columns: 1fr; gap: 0; } .student-feedback h3 { font-size: 19px; } .metric-grid { gap: 8px; } .metric-grid>div { padding: 16px 12px; } .metric-grid strong { font-size: 26px; } .metric-grid span { font-size: 10px; } .management-tools, .roster-editor { padding: 0 14px; } .student-options { grid-template-columns: 1fr; } .camera-body { padding: 15px; } .camera-summary-note { display: none; } .camera-panel summary>.ui-icon { margin-left: auto; } .camera-settings { gap: 8px; align-items: flex-start; } .camera-settings .data-note { margin: 0 0 16px; } .camera-settings .field { margin-bottom: 8px; } .camera-actions { gap: 8px; } .camera-actions .primary-button, .camera-actions .secondary-button, .upload-button { font-size: 11px; padding-left: 11px; padding-right: 11px; } }

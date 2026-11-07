@@ -1,0 +1,29 @@
+.developer-panel { border-top:1px solid #e3e8d8; margin-top:27px; padding-top:17px; }
+.developer-heading { display:flex; justify-content:space-between; align-items:center; gap:12px; }
+.developer-heading .quiet-button { font-size:12px; padding-left:0; }
+.demo-local,.demo-protected { font-size:10px; background:#eef2e5; color:#879577; padding:4px 8px; border-radius:6px; white-space:nowrap; }
+.developer-body { margin-top:13px; }
+.demo-switches { display:flex; flex-wrap:wrap; gap:9px; }
+.demo-switches .secondary-button { flex:1; }
+.demo-switches .selected { border-color:#9eaf8d; background:#ecf2e1; }
+.demo-tools { display:flex; gap:12px; flex-wrap:wrap; margin-top:10px; justify-content:space-between; }
+.demo-tools .quiet-button { font-size:11px; }
+.demo-members { border:1px solid #e2e7d6; background:#f9faf3; border-radius:15px; padding:20px; margin-top:20px; }
+.demo-members h3 { font-size:16px; color:#536d43; margin:0; }
+.demo-member-filters { display:flex; gap:9px; flex-wrap:wrap; margin:18px 0; }
+.demo-member-filters input,.demo-member-filters select { min-width:0; padding:9px 10px; font-size:12px; border:1px solid #dfe5d4; background:#fffef9; color:#667b55; border-radius:8px; }
+.demo-member-filters input { flex:1; min-width:150px; }
+.demo-member-form { padding:18px; border:1px solid #e2e7d7; background:#fffef9; border-radius:12px; margin:17px 0; }
+.demo-member-form h4 { font-size:14px; color:#597149; font-weight:500; margin:0 0 19px; overflow-wrap:anywhere; }
+.demo-member-list { display:grid; gap:10px; }
+.demo-member-row { display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap; padding:16px; border:1px solid #e5e9dc; border-radius:11px; background:#fffef9; }
+.demo-member-row>div:first-child { min-width:0; }
+.demo-member-row strong { font-size:13px; font-weight:500; color:#536a44; overflow-wrap:anywhere; }
+.demo-member-row p { font-size:11px; color:#8a967e; margin:5px 0 0; overflow-wrap:anywhere; }
+.demo-member-actions { display:flex; flex-wrap:wrap; gap:5px; margin-left:auto; }
+.demo-member-actions .quiet-button { font-size:11px; }
+.auth-card .demo-member-form .form-pair { grid-template-columns:1fr; gap:0; }
+.auth-card .demo-members { padding:15px; }
+.auth-card .demo-member-row { padding:12px; }
+.developer-container:has(.developer-panel.active) { scroll-margin-top:20px; }
+@media(max-width:560px) { .demo-members { padding:15px; } .demo-member-form { padding:14px; } .demo-switches .secondary-button { flex:1 1 40%; } .demo-member-filters input { flex-basis:100%; } .demo-member-actions { width:100%; justify-content:flex-end; } }

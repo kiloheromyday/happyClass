@@ -1,0 +1,35 @@
+.join-class-panel { margin: 20px 0; background: #f1f5ec; border: 1px solid #e1e8d8; padding: 18px 20px; border-radius: 14px; }
+.join-class-form { display: flex; gap: 14px; align-items: flex-end; }
+.join-class-form .field { flex: 1; margin: 0; }
+.join-class-form input { letter-spacing: .08em; width: 100%; }
+.join-class-form input::placeholder { letter-spacing: 0; font-size: 12px; }
+.course-actions { display: flex; gap: 12px; align-items: center; }
+.course-management .course-list li { align-items: center; }
+.course-management .course-list strong { color: #52664c; font-size: 14px; font-weight: 550; }
+.course-management .course-list .data-note { margin: 7px 0 0; }
+.course-invitation { margin-top: 28px; }
+.daily-classroom-filters { display: flex; gap: 16px; margin: 22px 0 8px; }
+.daily-classroom-filters .field:first-child { flex: 1; }
+.daily-classroom-filters select { width: 100%; }
+@media(max-width: 600px) { .daily-classroom-filters { flex-direction: column; gap: 0; } }
+.join-code-panel { margin: 20px 0; border: 1px solid #e0e6d6; border-radius: 14px; background: #f7f9f1; }
+.join-code-panel summary { padding: 17px 20px; cursor: pointer; color: #526f43; font-size: 13px; }
+.join-code-body { padding: 0 20px 20px; }
+.join-code-display { display: flex; justify-content: space-between; gap: 16px; align-items: center; }
+.join-code-display > div { display: flex; flex-direction: column; gap: 8px; }
+.join-code-status { font-size: 11px; color: #8a997b; }
+.join-code-display strong { color: #45634e; font-family: Consolas, monospace; font-size: 30px; letter-spacing: .17em; font-weight: 500; user-select: all; }
+.join-code-display strong.inactive { color: #a3ac98; }
+.join-code-actions { display: flex; align-items: flex-end; gap: 14px; flex-wrap: wrap; margin-top: 20px; }
+.join-code-actions .field { margin: 0; min-width: 120px; }
+.review-note-excerpts { margin: 24px 0; }
+.review-note-excerpt { border: 1px solid #e3e7d9; border-radius: 14px; padding: 18px; margin-bottom: 12px; background: #fafbf6; }
+.review-note-excerpt header { display: flex; align-items: center; justify-content: space-between; gap: 14px; }
+.review-note-excerpt strong { color: #5b704e; font-size: 13px; font-weight: 550; overflow-wrap: anywhere; }
+.review-note-excerpt header span { font-size: 10px; color: #8f9a81; white-space: nowrap; }
+.review-note-excerpt p { font-size: 12px; color: #819071; line-height: 1.8; white-space: pre-wrap; overflow-wrap: anywhere; }
+.review-note-excerpt .quiet-button { margin-top: 5px; }
+.personal-review-toolbar { flex-wrap: wrap; align-items: flex-end; }
+.personal-review-toolbar .review-session-select { flex: 1; min-width: 180px; }
+.personal-review-toolbar .review-session-select select { width: 100%; }
+@media(max-width: 600px) { .join-class-form { flex-direction: column; align-items: stretch; } .join-code-display { flex-wrap: wrap; } .join-code-display strong { font-size: 25px; } }

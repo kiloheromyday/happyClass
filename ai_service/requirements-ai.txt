@@ -1,0 +1,4 @@
+# Optional phase 2+ dependencies. Not installed or verified in phase 1.
+# The ONNX model file, preprocessing and output label order must be verified together.
+opencv-python-headless>=4.13,<5
+onnxruntime>=1.23,<2
