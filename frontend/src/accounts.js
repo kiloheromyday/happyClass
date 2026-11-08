@@ -99,7 +99,7 @@ export const Workspace = {
       if (props.demoBusy) return;
       if (props.memberDirty) { error.value = '成员修改尚未保存，请先保存或放弃成员修改。'; return; }
       const next = typeof target === 'string' ? target : target.tab;
-      if (extensionDirty.value) { error.value = '课程评价或维护信息尚未保存，请先保存或放弃草稿。'; return; }
+      if (extensionDirty.value) { error.value = '表单内容尚未保存，请先保存或清空草稿。'; return; }
       if (leaveDirty.value) { error.value = '请假申请或审批尚未保存，请先完成或放弃草稿。'; return; }
       if (classroomDirty.value) { error.value = '课堂中有未保存的内容，请先保存或放弃修改后离开。'; return; }
       if (scheduleDirty.value) { error.value = '新课堂安排尚未保存，请先保存或放弃安排。'; return; }
@@ -128,7 +128,7 @@ export const Workspace = {
     async function logout() {
       if (props.demoBusy) return;
       if (props.memberDirty) { error.value = '成员修改尚未保存，请先保存或放弃成员修改。'; return; }
-      if (extensionDirty.value) { error.value = '课程评价或维护信息尚未保存，请先保存或放弃草稿。'; return; }
+      if (extensionDirty.value) { error.value = '表单内容尚未保存，请先保存或清空草稿。'; return; }
       if (leaveDirty.value) { error.value = '请假申请或审批尚未保存，请先完成或放弃草稿。'; return; }
       if (classroomDirty.value || scheduleDirty.value) { error.value = '教学或课堂内容尚未保存，请先保存或放弃修改。'; return; }
       if (profileDirty.value) { error.value = '头像预览或个人资料尚未保存，请先保存，或取消预览、撤销修改。'; return; }
@@ -162,7 +162,7 @@ export const Workspace = {
         notice(error.value), h('button', { class: 'primary-button', disabled: changing.value }, changing.value ? '正在保存…' : '保存新密码'),
       ])];
       if (tab.value === 'users') return [
-        h('div', { class: 'section-title' }, [h('h2', '用户列表'), h('span', { class: 'count' }, `共 ${total.value} 位`)]), h(AdminUserForm, { onCreated: () => loadUsers(), onExpired: () => emit('session-ended', '登录已过期，请重新登录。') }), notice(error.value),
+        h('div', { class: 'section-title' }, [h('h2', '用户列表'), h('span', { class: 'count' }, `共 ${total.value} 位`)]), h(AdminUserForm, { onDirtyChange: value => { extensionDirty.value = value; if (!value) error.value = ''; }, onCreated: () => loadUsers(), onExpired: () => emit('session-ended', '登录已过期，请重新登录。') }), notice(error.value),
         loading.value ? h('p', { role: 'status' }, '正在加载用户…') : h('div', { class: 'table-wrap' }, [h('table', [
           h('thead', h('tr', ['用户名', '角色', '邮箱', '状态', '注册时间'].map(text => h('th', { scope: 'col' }, text)))),
           h('tbody', users.value.map(user => h('tr', { key: user.id }, [h('td', { title: user.username }, user.username), h('td', h('span', { class: 'table-badge' }, roleNames[user.role])), h('td', { title: user.email || undefined }, user.email || '—'), h('td', h('span', { class: ['status-text', { active: user.status === 'ACTIVE' }] }, user.status === 'ACTIVE' ? '正常' : '已停用')), h('td', dateText(user.created_at))]))),

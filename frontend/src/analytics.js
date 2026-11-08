@@ -18,6 +18,8 @@ export const AnalyticsPanel = {
     const sessions = ref([]), courses = ref([]), selected = ref(''), auto = ref(true);
     const data = ref(null), loading = ref(false), exporting = ref(false), error = ref(''), message = ref('');
     const draft = reactive({ course_id: props.initialCourseId ? String(props.initialCourseId) : '', session_id: props.initialSessionId ? String(props.initialSessionId) : '', class_name: '', from_time: '', to_time: '', source: '', bucket: 'day', data_scope: props.initialDataScope || 'ALL' });
+    const appliedDraft = ref('');
+    const filtersChanged = computed(() => !props.realtime && Boolean(appliedDraft.value) && JSON.stringify(draft) !== appliedDraft.value);
     const classes = computed(() => [...new Set(sessions.value.filter(item => !draft.course_id || item.course_id === Number(draft.course_id)).map(item => item.class_name))].sort());
     let disposed = false, reportRequest = null, exportRequest = null, bootRequest = null;
     function fail(failure) {
@@ -54,13 +56,14 @@ export const AnalyticsPanel = {
       loading.value = true; error.value = ''; message.value = '';
       try {
         const filters = { ...draft, from_time: draft.from_time ? new Date(draft.from_time).toISOString() : '', to_time: draft.to_time ? new Date(draft.to_time).toISOString() : '' };
+        const signature = JSON.stringify(draft);
         const result = await api('/api/reports/statistics?' + queryString(filters), { signal: controller.signal });
-        if (!disposed && !controller.signal.aborted) data.value = result.data;
+        if (!disposed && !controller.signal.aborted) { data.value = result.data; appliedDraft.value = signature; }
       } catch (failure) { if (!disposed && !controller.signal.aborted) fail(failure); }
       finally { if (reportRequest === controller) loading.value = false; }
     }
     async function exportReport() {
-      if (!data.value || exporting.value || loading.value) return;
+      if (!data.value || exporting.value || loading.value || filtersChanged.value) return;
       exportRequest = new AbortController();
       exporting.value = true; error.value = ''; message.value = '';
       try {
@@ -114,7 +117,8 @@ export const AnalyticsPanel = {
         select('记录来源', draft.source, value => draft.source = value, [['', '全部来源'], ['MANUAL', '手动反馈'], ['AI', 'AI 记录']], loading.value || exporting.value),
         select('趋势粒度', draft.bucket, value => draft.bucket = value, [['day', '按天'], ['hour', '按小时']], loading.value || exporting.value),
         h('p', { class: 'data-note filter-note' }, '本地时间 · 留空默认近 7 天 · 导出沿用已查询条件'),
-        h('div', { class: 'report-actions' }, [h('button', { class: 'primary-button', disabled: loading.value || exporting.value }, loading.value ? '正在查询…' : '查询统计'), h('button', { class: 'secondary-button', type: 'button', disabled: loading.value || exporting.value || !data.value, onClick: exportReport }, [icon('download', 15), exporting.value ? '正在生成…' : '导出 CSV'])]),
+        filtersChanged.value ? h('p', { class: 'data-note filter-note', role: 'status' }, '筛选条件已修改，请先查询统计；下方仍为上次查询结果。') : null,
+        h('div', { class: 'report-actions' }, [h('button', { class: 'primary-button', disabled: loading.value || exporting.value }, loading.value ? '正在查询…' : '查询统计'), h('button', { class: 'secondary-button', type: 'button', disabled: loading.value || exporting.value || !data.value || filtersChanged.value, onClick: exportReport }, [icon('download', 15), exporting.value ? '正在生成…' : '导出 CSV'])]),
       ]);
     }
     function dashboardControls() {

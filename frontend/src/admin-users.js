@@ -1,14 +1,17 @@
-import { h, reactive, ref, onBeforeUnmount } from 'vue';
+import { h, reactive, ref, computed, watch, onBeforeUnmount } from 'vue';
 import { api } from './api.js';
 
 export const AdminUserForm = {
-  emits: ['created', 'expired'],
+  emits: ['created', 'expired', 'dirty-change'],
   setup(_, { emit }) {
     const form = reactive({ username: '', email: '', password: '', confirm: '', role: 'TEACHER' });
     const busy = ref(false), error = ref(''), message = ref('');
+    const dirty = computed(() => ['username', 'email', 'password', 'confirm'].some(key => Boolean(form[key])));
+    watch(dirty, value => emit('dirty-change', value), { flush: 'sync' });
+    function clear() { form.username = form.email = form.password = form.confirm = ''; error.value = message.value = ''; }
     const abort = new AbortController();
     let disposed = false;
-    onBeforeUnmount(() => { disposed = true; abort.abort(); form.password = form.confirm = ''; });
+    onBeforeUnmount(() => { disposed = true; abort.abort(); form.password = form.confirm = ''; emit('dirty-change', false); });
     async function submit(event) {
       event.preventDefault(); if (busy.value) return;
       error.value = message.value = '';
@@ -20,7 +23,7 @@ export const AdminUserForm = {
       } catch (failure) { if (!disposed) { if (failure.status === 401) emit('expired'); else error.value = failure.message; } }
       finally { busy.value = false; }
     }
-    const field = (label, name, options) => h('label', { class: 'field' }, [h('span', label), h('input', { name, value: form[name], onInput: event => form[name] = event.target.value, ...options })]);
+    const field = (label, name, options) => h('label', { class: 'field' }, [h('span', label), h('input', { name, value: form[name], disabled: busy.value, onInput: event => form[name] = event.target.value, ...options })]);
     return () => h('details', { class: 'management-tools' }, [h('summary', '创建教师或学生账号'), h('form', { class: 'password-form', onSubmit: submit }, [
       h('label', { class: 'field' }, [h('span', '账号角色'), h('select', { value: form.role, onChange: event => form.role = event.target.value }, [h('option', { value: 'TEACHER' }, '教师'), h('option', { value: 'STUDENT' }, '学生')])]),
       field('用户名', 'username', { required: true, minlength: 3, maxlength: 254, pattern: '[A-Za-z0-9_][A-Za-z0-9_.@+\\-]*', autocomplete: 'off' }),
@@ -30,7 +33,7 @@ export const AdminUserForm = {
       h('p', { class: 'muted' }, '请将账号交给对应使用者，首次登录后可在“账号安全”修改密码。'),
       error.value ? h('div', { class: 'form-notice', role: 'alert' }, error.value) : null,
       message.value ? h('div', { class: 'form-notice success', role: 'status' }, message.value) : null,
-      h('button', { class: 'primary-button', disabled: busy.value }, busy.value ? '正在创建…' : '创建账号'),
+      h('div', { class: 'guide-actions' }, [dirty.value ? h('button', { type: 'button', class: 'quiet-button', disabled: busy.value, onClick: clear }, '清空账号草稿') : null, h('button', { class: 'primary-button', disabled: busy.value }, busy.value ? '正在创建…' : '创建账号')]),
     ])]);
   },
 };
