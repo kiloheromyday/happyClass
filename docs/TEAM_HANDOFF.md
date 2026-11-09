@@ -52,4 +52,4 @@
 当前自动检查与本机接口验证已完成，真实浏览器点击、屏幕布局、物理摄像头、跨环境复现、正式报告信息和视频仍需实际完成；这些是三人接下来最有价值的工作。
 ## 0.22.0 新增认领
 
-Lccccc679 已认领指导书 2.3 选做扩展，开发分支为 codex/lccccc679-optional-extensions。范围及复用边界见 [工作记录](CONTRIBUTION_Lccccc679.md)，部署与演示方法见 [选做扩展](OPTIONAL_EXTENSIONS.md)。原三人分工建议不等于本次实际贡献，最终按各自完成的代码、评审、测试和演示填写。
+Lccccc679 已认领指导书 2.3 选做扩展，开发分支为 feature/optional-extensions。范围及复用边界见 [工作记录](CONTRIBUTION_Lccccc679.md)，部署与演示方法见 [选做扩展](OPTIONAL_EXTENSIONS.md)。原三人分工建议不等于本次实际贡献，最终按各自完成的代码、评审、测试和演示填写。
