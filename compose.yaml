@@ -13,6 +13,7 @@ services:
     <<: *app
     ports: ["127.0.0.1:${EMOJI_WEB_PORT:-18090}:18080"]
     environment:
+      EMOJI_ALLOWED_ORIGINS: http://127.0.0.1:${EMOJI_WEB_PORT:-18090},http://localhost:${EMOJI_WEB_PORT:-18090}
       EMOJI_AI_URL: http://ai:18081
       EMOJI_AI_TOKEN_FILE: /run/secrets/ai_service
       EMOJI_AI_INGEST_TOKEN_FILE: /run/secrets/ai_ingest

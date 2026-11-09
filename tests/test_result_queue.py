@@ -127,13 +127,40 @@ def test_real_redis_consumer_recovery(actors, monkeypatch):
     client = Redis.from_url(os.environ['EMOJI_TEST_REDIS_URL'], decode_responses=True)
     queue = module.ResultQueue(client)
     queue.job_key = lambda identifier: prefix + ':job:' + identifier
-    result = queue.enqueue(AiBatchRequest.model_validate(batch(classroom_for(actors))))
+    payload = AiBatchRequest.model_validate(batch(classroom_for(actors)))
+    result = queue.enqueue(payload)
     try:
         entries(queue)  # Simulate delivery to a worker which dies before committing.
         assert queue.run_once('replacement', block_ms=1, idle_ms=0) == 1
         assert client.hget(queue.job_key(result['job_id']), 'state') == 'COMPLETED'
         with connect() as connection:
             assert connection.execute('SELECT count(*) FROM emoji_records').fetchone()[0] == 1
+        # A process can also die after DB commit but before acknowledging Redis.
+        second = queue.enqueue(AiBatchRequest.model_validate({**payload.model_dump(mode='json'), 'batch_id': str(uuid4())}))
+        acknowledge = queue.acknowledge
+        monkeypatch.setattr(queue, 'acknowledge', lambda _: (_ for _ in ()).throw(ConnectionError('simulated loss after commit')))
+        with pytest.raises(ConnectionError):
+            queue.run_once('dies-after-commit', block_ms=1, idle_ms=0)
+        monkeypatch.setattr(queue, 'acknowledge', acknowledge)
+        assert queue.run_once('recovers-after-commit', block_ms=1, idle_ms=0) == 1
+        assert client.hget(queue.job_key(second['job_id']), 'state') == 'COMPLETED'
+        with connect() as connection:
+            assert connection.execute('SELECT count(*) FROM emoji_records').fetchone()[0] == 2
+        # Exercise retry/dead-letter/replay against actual Redis commands too.
+        third = queue.enqueue(AiBatchRequest.model_validate({**payload.model_dump(mode='json'), 'batch_id': str(uuid4())}))
+        ingest = module.ingest_results
+        monkeypatch.setattr(module, 'ingest_results', lambda *_, **__: (_ for _ in ()).throw(sqlite3.OperationalError('simulated outage')))
+        for _ in range(3):
+            assert queue.run_once('failed-writer', block_ms=1, idle_ms=0) == 1
+        assert client.hget(queue.job_key(third['job_id']), 'state') == 'FAILED'
+        assert client.xlen(module.DEAD) == 1
+        monkeypatch.setattr(module, 'ingest_results', ingest)
+        queue.retry(third['job_id'])
+        assert queue.run_once('replay-writer', block_ms=1, idle_ms=0) == 1
+        assert client.hget(queue.job_key(third['job_id']), 'state') == 'COMPLETED'
+        with connect() as connection:
+            assert connection.execute('SELECT count(*) FROM emoji_records').fetchone()[0] == 3
+        assert client.xlen(module.STREAM) == 0
     finally:
         for key in client.scan_iter(prefix + ':*'):
             client.delete(key)
