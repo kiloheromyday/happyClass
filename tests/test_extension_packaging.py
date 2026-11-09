@@ -22,6 +22,9 @@ def test_compose_service_boundaries_and_nonpublishing_ci_permissions():
     services = compose['services']
     assert set(services) == {'web', 'redis', 'worker', 'ai', 'mcp'}
     assert services['web']['ports'][0].startswith('127.0.0.1:')
+    assert 'web_access' in services['web']['networks']
+    assert not compose['networks']['web_access'].get('internal', False)
+    assert all('web_access' not in services[name]['networks'] for name in ('redis', 'worker', 'ai', 'mcp'))
     # The browser Origin must follow the published port, including overrides.
     origins = services['web']['environment']['EMOJI_ALLOWED_ORIGINS']
     assert origins == 'http://127.0.0.1:${EMOJI_WEB_PORT:-18090},http://localhost:${EMOJI_WEB_PORT:-18090}'

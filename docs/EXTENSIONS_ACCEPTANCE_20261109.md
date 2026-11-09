@@ -1,5 +1,7 @@
 # 指导书 2.3 四项扩展验收
 
+最新补充：用户完成 Docker Desktop 4.98.0 / WSL 安装后，本机 Linux 容器实际部署已通过，详见下方“Docker 实际运行补充”。第四项目前仅剩 GitHub CI 远程运行待验收。
+
 日期：2026-11-09。认领成员：Lccccc679。代码基于本分支 2d2d31c，另含本轮 Compose 来源校验修复及真实 Redis 恢复测试扩充。采用 AI 辅助执行；不代替成员本人讲解和课程最终验收。
 
 ## 结论
@@ -9,7 +11,7 @@
 | 匿名与聚合模式 | 本机功能验收通过 | 隔离数据库 + 真实 HTTP：标准明细、匿名历史与 CSV、聚合隐藏明细且保留统计、学生本人历史保留、权限和版本冲突、防止降低保护等级；前端隐私交互检查通过 |
 | 消息队列异步处理 | 本机功能验收通过 | 真实 Redis + HTTP 接收 + 独立 worker：先接收后入库、置信度筛选、批次重复不重复入库、管理员积压及心跳；另通过真实 Redis 消费组恢复、提交后确认前中断、三次失败入失败列表及重放检查 |
 | MCP 工具服务 | 本机功能验收通过 | 官方 SDK 以 stdio 握手，发现两个工具、读取能力资源；model_status 访问实际 AI 服务；analyze_emotion 实际调用模型分析内存生成的无脸 JPEG；拒绝 URL 输入 |
-| Docker Compose 与 CI | 部分通过，尚未完成运行验收 | 官方 Compose 配置解析、端口覆盖及 actionlint 工作流检查通过；Docker 引擎缺失，无法构建/运行容器；GitHub Actions 运行数为 0，未有远程绿灯 |
+| Docker Compose 与 CI | Docker 实际部署通过，CI 待远程运行 | 后续已构建并启动网页、Redis、worker 和 AI 容器，12 项容器检查通过；GitHub CI 仍未触发 |
 
 前三项为功能链路验收，不包含 AI 模型准确率、课堂多人并发性能或正式生产部署验收。匿名模式是展示保护，不是不可逆匿名；MCP 测试未使用真人图片，没有给出识别准确率结论。
 
@@ -43,3 +45,15 @@ Compose 网页默认发布到宿主机 18090，但原请求来源校验默认只
 2. 使用 Git 命令行认证上传本分支，查看 GitHub Actions 的 tests 和 containers 两个任务实际运行结果，修复失败后保留绿灯链接。
 
 缺少以上两类运行证据前，不能对老师宣称四项全部完成验收。
+
+## Docker 实际运行补充
+
+上述“Docker 引擎缺失”是安装前记录，现已补验：Docker Desktop 4.98.0、Engine 29.9.2、Compose v5.6.1，linux/amd64。已有 start-extensions.ps1 -WithAI 脚本成功构建镜像并启动四个服务。Windows 命令行首次获取 Docker Hub token 超时，使用电脑现有系统代理设置到本次命令的 HTTP_PROXY/HTTPS_PROXY 后下载成功，没有修改全局代理设置。
+
+实际验收发现并修复了第二个部署问题：全部服务仅连接 internal 网络时，此 Docker 环境没有实际发布网页端口。现仅让 web 额外连接 web_access 桥接网络，继续只将 127.0.0.1:18090 发布到宿主机；Redis、worker、AI、MCP 均不连接该访问网络、不发布宿主机端口。增加了对应回归检查，2 项交付检查通过。
+
+容器运行验收共 12 项通过：四服务运行健康、宿主机首页、18090 Origin 登录、AI 健康、队列重复批次识别、真实 worker 入库、队列心跳、容器内 MCP 工具发现、MCP 模型状态、MCP 调用实际模型、四服务重启后登录及数据库记录保留、重启后模型恢复。MCP 使用官方 SDK 通过 docker compose exec -T web python -m ai_service.mcp_server 测试容器内 stdio 与 ai 服务通信；未额外启动独立 mcp profile 容器。
+
+Docker 使用独立 happyclass_app_data 与 happyclass_queue_data 卷，没有迁移或覆盖原本 18080 服务的数据库。创建的演示课程标记为 is_demo=1，异步测试记录 device_id 为 deployment-self-test，属于合成标签，不是模型精度样本。验收后四个服务保留运行，网址 http://127.0.0.1:18090/ ，可用本轮准备的 demo_admin 或 demo_teacher 演示账号登录；密码未写入仓库或验收报告。
+
+因此上面的待办第 1 项已完成，接下来只需完成 GitHub 认证、上传分支与远程 tests/containers 两项 CI 运行记录。不能把本机容器通过写成 GitHub CI 已通过。

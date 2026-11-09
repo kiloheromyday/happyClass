@@ -11,6 +11,7 @@ x-app: &app
 services:
   web:
     <<: *app
+    networks: [classroom, web_access]
     ports: ["127.0.0.1:${EMOJI_WEB_PORT:-18090}:18080"]
     environment:
       EMOJI_ALLOWED_ORIGINS: http://127.0.0.1:${EMOJI_WEB_PORT:-18090},http://localhost:${EMOJI_WEB_PORT:-18090}
@@ -88,6 +89,7 @@ services:
 networks:
   classroom:
     internal: true
+  web_access: {}
 volumes:
   app_data:
   queue_data:
