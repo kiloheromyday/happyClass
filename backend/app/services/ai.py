@@ -84,23 +84,28 @@ async def process_frame(session_id, user, request_id, data):
     return success(result, '识别完成')
 
 
-def ingest_results(payload):
+def validate_batch(connection, payload, received_at=None):
+    item = get_session(connection, payload.session_id)
+    if item is None:
+        raise AppError(404, 'SESSION_NOT_FOUND', '课堂不存在')
+    now = received_at or now_utc()
+    if not datetime.fromisoformat(item['starts_at']) <= now < datetime.fromisoformat(item['ends_at']):
+        raise AppError(409, 'SESSION_NOT_ONGOING', '只能向正在进行的课堂提交识别结果')
+    if not now - timedelta(minutes=5) <= payload.captured_at <= now + timedelta(seconds=30):
+        raise AppError(422, 'INVALID_CAPTURE_TIME', '采集时间需在接收前 5 分钟内，且不能超前超过 30 秒')
+    if not datetime.fromisoformat(item['starts_at']) <= payload.captured_at < datetime.fromisoformat(item['ends_at']):
+        raise AppError(422, 'CAPTURE_OUTSIDE_SESSION', '采集时间不在课堂时间范围内')
+
+
+def ingest_results(payload, *, received_at=None):
+    # received_at is supplied ONLY by the verified internal queue worker, never HTTP input.
     digest = hashlib.sha256(payload.model_dump_json().encode()).hexdigest()
     with connect() as connection:
         connection.execute('BEGIN IMMEDIATE')
         previous = previous_batch(connection, payload.device_id, payload.batch_id, digest)
         if previous is not None:
             return success(previous, '该批结果已接收')
-        item = get_session(connection, payload.session_id)
-        if item is None:
-            raise AppError(404, 'SESSION_NOT_FOUND', '课堂不存在')
-        if session_status(item) != 'ONGOING':
-            raise AppError(409, 'SESSION_NOT_ONGOING', '只能向正在进行的课堂提交识别结果')
-        now = now_utc()
-        if not now - timedelta(minutes=5) <= payload.captured_at <= now + timedelta(seconds=30):
-            raise AppError(422, 'INVALID_CAPTURE_TIME', '采集时间需在最近 5 分钟内，且不能超前超过 30 秒')
-        if not datetime.fromisoformat(item['starts_at']) <= payload.captured_at < datetime.fromisoformat(item['ends_at']):
-            raise AppError(422, 'CAPTURE_OUTSIDE_SESSION', '采集时间不在课堂时间范围内')
+        validate_batch(connection, payload, received_at)
         # Ingest has a dedicated credential, and cannot supply user identity or source.
         threshold = confidence_threshold()
         kept = [face for face in payload.faces if face.confidence >= threshold and face.emotion != 'CONTEMPT']

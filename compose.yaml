@@ -1,0 +1,97 @@
+name: happyclass
+
+x-app: &app
+  build:
+    context: .
+    target: runtime
+  init: true
+  restart: unless-stopped
+  networks: [classroom]
+
+services:
+  web:
+    <<: *app
+    ports: ["127.0.0.1:${EMOJI_WEB_PORT:-18090}:18080"]
+    environment:
+      EMOJI_AI_URL: http://ai:18081
+      EMOJI_AI_TOKEN_FILE: /run/secrets/ai_service
+      EMOJI_AI_INGEST_TOKEN_FILE: /run/secrets/ai_ingest
+      EMOJI_REDIS_URL: redis://redis:6379/0
+      EMOJI_DATABASE_PATH: /app/data/classroom.db
+    volumes: ["app_data:/app/data"]
+    secrets: [ai_service, ai_ingest]
+    depends_on:
+      redis: {condition: service_healthy}
+    healthcheck:
+      test: ["CMD", "python", "-c", "import json,urllib.request; r=json.load(urllib.request.urlopen('http://127.0.0.1:18080/api/health',timeout=3)); assert r['data']['status']=='ok'"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  redis:
+    image: redis:8.2-alpine
+    command: ["redis-server", "--appendonly", "yes", "--appendfsync", "everysec", "--maxmemory", "128mb", "--maxmemory-policy", "noeviction"]
+    restart: unless-stopped
+    networks: [classroom]
+    volumes: ["queue_data:/data"]
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  worker:
+    <<: *app
+    command: ["python", "-m", "ai_service.worker"]
+    environment:
+      EMOJI_REDIS_URL: redis://redis:6379/0
+      EMOJI_AI_INGEST_TOKEN_FILE: /run/secrets/ai_ingest
+      EMOJI_DATABASE_PATH: /app/data/classroom.db
+    volumes: ["app_data:/app/data"]
+    secrets: [ai_ingest]
+    depends_on:
+      web: {condition: service_healthy}
+      redis: {condition: service_healthy}
+
+  ai:
+    build:
+      context: .
+      target: ai
+    profiles: [ai, mcp]
+    init: true
+    restart: unless-stopped
+    networks: [classroom]
+    environment:
+      EMOJI_AI_TOKEN_FILE: /run/secrets/ai_service
+    secrets: [ai_service]
+    healthcheck:
+      test: ["CMD", "python", "-c", "import json,urllib.request; r=json.load(urllib.request.urlopen('http://127.0.0.1:18081/health',timeout=3)); assert r['data']['ready'] is True"]
+      interval: 10s
+      timeout: 5s
+      retries: 20
+      start_period: 20s
+
+  mcp:
+    <<: *app
+    profiles: [mcp]
+    restart: "no"
+    stdin_open: true
+    command: ["python", "-m", "ai_service.mcp_server"]
+    environment:
+      EMOJI_AI_URL: http://ai:18081
+      EMOJI_AI_TOKEN_FILE: /run/secrets/ai_service
+    secrets: [ai_service]
+    depends_on:
+      ai: {condition: service_healthy}
+
+networks:
+  classroom:
+    internal: true
+volumes:
+  app_data:
+  queue_data:
+secrets:
+  ai_service:
+    file: ./.docker/secrets/ai-service.token
+  ai_ingest:
+    file: ./.docker/secrets/ai-ingest.token

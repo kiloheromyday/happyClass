@@ -7,9 +7,9 @@ from pathlib import Path
 from zipfile import ZIP_DEFLATED, ZipFile
 
 ROOT = Path(__file__).resolve().parents[1]
-ROOT_FILES = {'.env.example', '.gitignore', 'README.md', 'requirements.txt', 'requirements-lock.txt', 'pytest.ini'}
-FOLDERS = {'backend', 'frontend', 'ai_service', 'database', 'docs', 'scripts', 'tests'}
-OMIT_PARTS = {'node_modules', '.venv', '.git', '__pycache__', '.pytest_cache', 'logs', 'data'}
+ROOT_FILES = {'.env.example', '.gitignore', '.gitattributes', '.dockerignore', 'Dockerfile', 'compose.yaml', 'README.md', 'requirements.txt', 'requirements-lock.txt', 'requirements-extensions.txt', 'requirements-extensions-test.txt', 'pytest.ini'}
+FOLDERS = {'.github', 'backend', 'frontend', 'ai_service', 'database', 'docs', 'scripts', 'tests'}
+OMIT_PARTS = {'node_modules', '.venv', '.git', '.docker', '__pycache__', '.pytest_cache', 'logs', 'data'}
 OMIT_SUFFIXES = {'.pyc', '.pyo', '.onnx', '.token', '.db', '.sqlite', '.sqlite3', '.log'}
 
 

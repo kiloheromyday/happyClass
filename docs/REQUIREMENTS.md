@@ -31,7 +31,7 @@
 
 使用服务端 Session，不使用 JWT，两者均符合参考认证选择。看板使用轮询，不使用 WebSocket。教师和管理员不能通过公开注册自行选择特权角色。接口以本项目 OpenAPI 为准，参考中的路径是示例；独立结果接收采用 `/api/ai/emoji-results`。
 
-Docker Compose、消息队列、MCP 服务是可选扩展，当前未实现；本机 Docker 引擎不可用，未为此下载大镜像。没有虚构部署验收。
+0.22.0 已加入课堂匿名与聚合模式、Redis Streams 异步结果处理、MCP stdio 工具、Compose 与 CI 配置。它们属于选做扩展；Docker 和远程 CI 的实际运行状态需另行验收，说明见 OPTIONAL_EXTENSIONS.md，不能将配置存在当作已部署成功。
 
 ## 尚待完成的实际验收和材料
 

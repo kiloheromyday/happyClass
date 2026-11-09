@@ -97,7 +97,8 @@ const change = (root, name, value) => field(root, name).props.onChange({ target:
 
     mounted = mount(Workspace, { user: student }); await settle(); await button(mounted.root, '课程评价').props.onClick(); await settle();
     field(mounted.root, 'evaluation_comment').props.onInput({ target: { value: '未保存的评价' } }); await nextTick();
-    await button(mounted.root, '消息中心').props.onClick(); await nextTick(); assert(text(mounted.root).includes('课程评价或维护信息尚未保存'));
+    await button(mounted.root, '消息中心').props.onClick(); await nextTick(); assert(text(mounted.root).includes('表单内容尚未保存'));
+    assert.equal(field(mounted.root, 'evaluation_comment').props.value, '未保存的评价');
     await button(mounted.root, '退出登录').props.onClick(); await nextTick(); assert.equal(field(mounted.root, 'evaluation_comment').props.value, '未保存的评价');
     await button(mounted.root, '放弃评价草稿').props.onClick(); await nextTick(); await button(mounted.root, '消息中心').props.onClick(); await settle(); assert(text(mounted.root).includes('学习指引已发布')); mounted.app.unmount(); mounted = null;
     let aborted = false;

@@ -101,3 +101,6 @@ powershell -ExecutionPolicy Bypass -File .\scripts\start-ai.ps1
 0.18.0 新增本地演示开发者模式与 demo_access_sessions 能力表，无新增依赖。正常启动默认关闭；本机演示以 scripts/start-demo.ps1 启动，再在登录栏主动开启。切换只允许已存在且角色匹配的固定 demo 账号；不会自动创建账号或覆盖原密码。成员管理针对本数据库其他学生教师，须在自己控制的本地环境操作，勿反向代理对外开放。见 DEVELOPER_MODE.md。
 
 升级前停止服务并备份数据库，或使用 SQLite 官方备份 API 得到一致副本。保留原 data 目录，将新源码和前端构建放到同一项目目录后重启主服务。启动时幂等补齐新增表；不删除账号、课程、反馈或学伴关系。AI 服务无需更换模型。确认 `/openapi.json` 版本为 0.18.0、`/api/health` 数据库 ready，然后刷新网页。扩展功能使用见 CLASSROOM_ENGAGEMENT.md、PERSONAL_NOTES.md、BUDDY_WALL.md、JOIN_CODES.md、PROFILE_HOME.md、COURSE_DETAILS.md、TEACHER_WORKSPACE.md 和 DEVELOPER_MODE.md。
+## 0.22.0 选做服务部署入口
+
+原本机部署方式继续可用。Redis、独立结果工作进程、MCP 和 Docker Compose 的安装、密钥、端口及验证命令见 [选做扩展](OPTIONAL_EXTENSIONS.md)。Docker 默认网页端口为 18090，使用独立卷，与原本机 18080 服务的数据分开。

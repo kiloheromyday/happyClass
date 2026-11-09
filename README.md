@@ -2,7 +2,7 @@
 
 面向三人组课程大作业的课堂反馈系统。学生选择已加入课程中的具体课堂，提交感受和完整评价；教师回应问题、发布学习指引、审批请假并查看统计；管理员维护全校开课、院系、课程和账号。
 
-**交接版本：0.21.1；图文手册及界面完善日期：2026-11-09。** 系统版本以 `backend/app/main.py` 的 API 版本为准。已完成三角色真实浏览器操作及截图手册，见 [功能使用说明](docs/manual/README.md)。物理摄像头实时采集和另一台电脑的部署验收仍待完成，不能视为已经通过生产部署验收。
+**选做扩展版本：0.22.0；原交接版本：0.21.1；图文手册及界面完善日期：2026-11-09。** 系统版本以 `backend/app/main.py` 的 API 版本为准。已完成三角色真实浏览器操作及截图手册，见 [功能使用说明](docs/manual/README.md)。物理摄像头实时采集和另一台电脑的部署验收仍待完成，不能视为已经通过生产部署验收。
 
 本 README 是组员接手入口：先完成本地启动，再按角色体验业务，最后核对待办与分工。
 
@@ -189,7 +189,7 @@ Python 测试使用隔离数据库，不要改为指向现有业务数据库。A
 3. 按 [真实截图使用说明](docs/manual/README.md) 复现三角色流程；最新版为 49 页、35 个场景、56 幅配图，已标注实际入口及操作结果。更换界面或业务规则后同步更新对应截图。
 4. 在另一台电脑按本 README 复现，补姓名、组号、真实贡献和教师要求，冻结版本后录视频。
 
-排课冲突检测不在当前需求中。MySQL/PostgreSQL 适配、Docker、公网部署、邮件或短信通知尚未实现，不能在报告中写成现成功能。详细分工见 [TEAM_HANDOFF](docs/TEAM_HANDOFF.md)。
+排课冲突检测不在当前需求中。MySQL/PostgreSQL 适配、公网部署、邮件或短信通知尚未实现；Docker Compose 与 CI 已新增，容器实际运行和远程流水线状态须另行验收，不能在报告中写成现成功能。详细分工见 [TEAM_HANDOFF](docs/TEAM_HANDOFF.md)。
 
 ## 9. 数据与交付约定
 
@@ -199,3 +199,11 @@ Python 测试使用隔离数据库，不要改为指向现有业务数据库。A
 - 截图、测试和贡献记录只写实际发生的内容；流程示意或自动化检查不替代真实浏览器验收。
 
 常用资料：[需求](docs/REQUIREMENTS.md) · [设计与 ER 图](docs/DESIGN.md) · [部署](docs/DEPLOYMENT.md) · [数据库脚本](database/schema.sql) · [演示与报告](docs/DEMO_AND_REPORT.md) · [个人笔记](docs/PERSONAL_NOTES.md) · [课程详情](docs/COURSE_DETAILS.md) · [教师对应流程](docs/TEACHER_WORKSPACE.md) · [评价与消息](docs/COURSE_EVALUATIONS_AND_MESSAGES.md)。
+
+## 10. 指导书 2.3 选做扩展
+
+0.22.0 增加按课堂设置的标准、匿名与聚合展示，覆盖历史、看板和 CSV；管理员可查看异步任务积压和失败重试。Redis Streams 结果工作进程支持签名、重投恢复、限次重试、失败索引和幂等入库。独立采集命令可选择 `--delivery queue`。
+
+官方 MCP SDK 提供 stdio 模型状态、显式 JPEG 分析工具和能力资源。多阶段 Dockerfile、Compose 及 GitHub Actions 配置已加入；本机没有 Docker 时不能视为已完成容器验收，CI 成功以远程运行结果为准。
+
+完整安装、入口、API、故障恢复与验证说明见 [选做扩展](docs/OPTIONAL_EXTENSIONS.md)；认领范围、复用边界及待验项目见 [Lccccc679 工作记录](docs/CONTRIBUTION_Lccccc679.md)。

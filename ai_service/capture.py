@@ -41,12 +41,13 @@ def post_with_retry(client, url, *, sleep=time.sleep, attempts=3, **kwargs):
             sleep(2 ** attempt)
 
 
-def submit_image(client, image_bytes, *, backend_url, ai_url, session_id, device_id, inference_token, intake_token, captured_at=None, sleep=time.sleep):
+def submit_image(client, image_bytes, *, backend_url, ai_url, session_id, device_id, inference_token, intake_token, captured_at=None, sleep=time.sleep, delivery='sync'):
     captured_at = captured_at or datetime.now(UTC)
     response = post_with_retry(client, ai_url + '/infer', content=image_bytes, headers={'Authorization': f'Bearer {inference_token}', 'Content-Type': 'image/jpeg'}, sleep=sleep)
     prediction = InferenceResult.model_validate(response.json())
     payload = {'batch_id': str(uuid4()), 'session_id': session_id, 'device_id': device_id, 'captured_at': captured_at.isoformat(), 'faces': [face.model_dump() for face in prediction.faces]}
-    accepted = post_with_retry(client, backend_url + '/api/ai/emoji-results', json=payload, headers={'Authorization': f'Bearer {intake_token}'}, sleep=sleep)
+    endpoint = '/api/ai/queued-results' if delivery == 'queue' else '/api/ai/emoji-results'
+    accepted = post_with_retry(client, backend_url + endpoint, json=payload, headers={'Authorization': f'Bearer {intake_token}'}, sleep=sleep)
     return accepted.json()['data']
 
 
@@ -106,6 +107,7 @@ def parser():
     source.add_argument('--image', help='Single JPEG for a reproducible check; no camera access')
     result.add_argument('--session-id', required=True, type=int)
     result.add_argument('--device-id', required=True)
+    result.add_argument('--delivery', choices=['sync', 'queue'], default='sync', help='queue acknowledges acceptance; the worker stores results asynchronously')
     result.add_argument('--interval', type=float, default=3, help='Sampling interval, 3 to 60 seconds')
     result.add_argument('--max-frames', type=int, default=0, help='0 for continuous capture; image mode always submits once')
     result.add_argument('--backend-url', type=trusted_url, default='http://127.0.0.1:18080')
@@ -128,8 +130,11 @@ def main(argv=None):
         with httpx.Client(timeout=20, trust_env=False, follow_redirects=False) as client:
             for count, image in enumerate(source, start=1):
                 started = time.monotonic()
-                data = submit_image(client, image, backend_url=args.backend_url, ai_url=args.ai_url, session_id=args.session_id, device_id=args.device_id, inference_token=inference_token, intake_token=intake_token)
-                LOGGER.info('Batch acknowledged: received=%s saved=%s filtered=%s', data['received'], data['saved'], data['filtered'])
+                data = submit_image(client, image, backend_url=args.backend_url, ai_url=args.ai_url, session_id=args.session_id, device_id=args.device_id, inference_token=inference_token, intake_token=intake_token, delivery=args.delivery)
+                if args.delivery == 'queue':
+                    LOGGER.info('Queue accepted job=%s state=%s', data['job_id'], data['state'])
+                else:
+                    LOGGER.info('Batch acknowledged: received=%s saved=%s filtered=%s', data['received'], data['saved'], data['filtered'])
                 if args.image or (args.max_frames and count >= args.max_frames):
                     break
                 time.sleep(max(0, args.interval - (time.monotonic() - started)))

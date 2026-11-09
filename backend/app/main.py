@@ -21,6 +21,8 @@ from backend.app.controllers.teaching import router as teaching_router
 from backend.app.controllers.demo import router as demo_router
 from backend.app.controllers.leaves import router as leaves_router
 from backend.app.controllers.extensions import router as extensions_router
+from backend.app.controllers.privacy import router as privacy_router
+from backend.app.controllers.ai_queue import router as ai_queue_router
 from backend.app.errors import AppError, app_error_handler, validation_error_handler, http_error_handler
 from backend.app.repositories.database import PROJECT_ROOT, initialize_database
 
@@ -34,7 +36,7 @@ async def lifespan(app: FastAPI):
 app = FastAPI(
     title="课堂情绪检查器 API",
     description="课程添加与加入码、进行中及课后 30 分钟的个人评价、匿名问题卡、课堂小结、个人笔记与回顾导出、学伴留言墙、看板与统计导出。教师仅能访问所授课程；学生仅能读取自己的情绪和笔记、名单内课堂的匿名问题及已确认学伴的留言墙。写操作需携带 X-Requested-With: EmojiClassroom。",
-    version="0.21.1",
+    version="0.22.0",
     lifespan=lifespan,
 )
 app.include_router(router)
@@ -52,6 +54,8 @@ app.include_router(teaching_router)
 app.include_router(demo_router)
 app.include_router(leaves_router)
 app.include_router(extensions_router)
+app.include_router(privacy_router)
+app.include_router(ai_queue_router)
 app.add_exception_handler(AppError, app_error_handler)
 app.add_exception_handler(RequestValidationError, validation_error_handler)
 app.add_exception_handler(HTTPException, http_error_handler)
