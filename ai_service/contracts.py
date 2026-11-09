@@ -9,11 +9,15 @@ class FaceResult(BaseModel):
     confidence: float = Field(ge=0, le=1, allow_inf_nan=False)
 
 
+class InferenceFace(FaceResult):
+    candidates: list[FaceResult] = Field(default_factory=list, max_length=3)
+
+
 class InferenceResult(BaseModel):
     model_config = ConfigDict(extra='forbid')
     detected: int = Field(ge=0, le=10000)
     processed: int = Field(ge=0, le=12)
-    faces: list[FaceResult] = Field(max_length=12)
+    faces: list[InferenceFace] = Field(max_length=12)
 
     @model_validator(mode='after')
     def consistent_counts(self):

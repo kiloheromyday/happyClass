@@ -78,9 +78,14 @@ async def process_frame(session_id, user, request_id, data):
             return success(previous)
         # Store only anonymous labels and probabilities; no image bytes or identity matching.
         add_predictions(connection, session_id, user['id'], kept, utc_text(now_utc()))
-        result = {'detected': prediction.detected, 'processed': prediction.processed, 'saved': len(kept), 'filtered': prediction.processed - len(kept), 'min_confidence': threshold}
+        predictions = [{
+            'emotion': face.emotion, 'confidence': face.confidence,
+            'reason': 'UNSUPPORTED_CLASS' if face.emotion == 'CONTEMPT' else 'LOW_CONFIDENCE' if face.confidence < threshold else 'SAVED',
+            'candidates': [candidate.model_dump() for candidate in face.candidates],
+        } for face in prediction.faces]
+        result = {'detected': prediction.detected, 'processed': prediction.processed, 'saved': len(kept), 'filtered': prediction.processed - len(kept), 'min_confidence': threshold, 'predictions': predictions}
         remember_frame(connection, session_id, user['id'], request_id, digest, result)
-        audit(connection, user['id'], 'AI_FRAME_PROCESSED', {'session_id': session_id, **result})
+        audit(connection, user['id'], 'AI_FRAME_PROCESSED', {'session_id': session_id, **{key: value for key, value in result.items() if key != 'predictions'}})
     return success(result, '识别完成')
 
 

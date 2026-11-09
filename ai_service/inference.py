@@ -80,5 +80,7 @@ class EmotionEngine:
                 probabilities = np.exp(scores - scores.max())
                 probabilities /= probabilities.sum()
                 index = int(probabilities.argmax())
-                faces.append({'emotion': LABELS[index], 'confidence': float(probabilities[index])})
+                candidates = [{'emotion': LABELS[int(i)], 'confidence': float(probabilities[i])}
+                              for i in np.argsort(probabilities)[::-1][:3]]
+                faces.append({'emotion': LABELS[index], 'confidence': float(probabilities[index]), 'candidates': candidates})
         return {'detected': len(boxes), 'processed': len(faces), 'faces': faces}

@@ -55,7 +55,7 @@ async def analyze_emotion(jpeg_base64: Annotated[str, Field(max_length=1_333_340
     except (httpx.HTTPError, ValueError) as error:
         raise ValueError('Inference failed; check the local model service and JPEG dimensions') from error
     threshold = confidence_threshold()
-    faces = [item.model_dump() for item in result.faces if item.confidence >= threshold and item.emotion != 'CONTEMPT']
+    faces = [item.model_dump(exclude_defaults=True) for item in result.faces if item.confidence >= threshold and item.emotion != 'CONTEMPT']
     return {'detected': result.detected, 'processed': result.processed, 'faces': faces,
             'filtered': result.processed - len(faces), 'min_confidence': threshold, 'stores_raw_media': False}
 

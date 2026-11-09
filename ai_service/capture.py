@@ -45,7 +45,7 @@ def submit_image(client, image_bytes, *, backend_url, ai_url, session_id, device
     captured_at = captured_at or datetime.now(UTC)
     response = post_with_retry(client, ai_url + '/infer', content=image_bytes, headers={'Authorization': f'Bearer {inference_token}', 'Content-Type': 'image/jpeg'}, sleep=sleep)
     prediction = InferenceResult.model_validate(response.json())
-    payload = {'batch_id': str(uuid4()), 'session_id': session_id, 'device_id': device_id, 'captured_at': captured_at.isoformat(), 'faces': [face.model_dump() for face in prediction.faces]}
+    payload = {'batch_id': str(uuid4()), 'session_id': session_id, 'device_id': device_id, 'captured_at': captured_at.isoformat(), 'faces': [face.model_dump(include={'emotion', 'confidence'}) for face in prediction.faces]}
     endpoint = '/api/ai/queued-results' if delivery == 'queue' else '/api/ai/emoji-results'
     accepted = post_with_retry(client, backend_url + endpoint, json=payload, headers={'Authorization': f'Bearer {intake_token}'}, sleep=sleep)
     return accepted.json()['data']
