@@ -15,5 +15,7 @@ import './developer.css';
 import './campus.css';
 import './leaves.css';
 import './extensions.css';
+import './emotion/replay.css';
+import './emotion/insights.css';
 
 createApp(App).mount('#app');
