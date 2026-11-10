@@ -74,6 +74,8 @@ powershell -ExecutionPolicy Bypass -File .\scripts\start.ps1
 
 ## 指导书 2.3 选做扩展
 
+新增的课堂回放、教学洞察和多课堂分析**后端服务**统一放在 `backend/app/emotion/`，配套测试、工具和说明分别放在 `tests/emotion/`、`scripts/emotion/`、[docs/emotion](docs/emotion/README.md)。本次不包含新增前端，原有页面和样式保持不变；新增功能可通过现有 `/docs` 接口文档调用，Compose 已启用报告任务工作进程。
+
 - **匿名与聚合模式**：按课堂配置标准、匿名或仅聚合展示，覆盖反馈历史、看板与 CSV 导出。
 - **异步 AI 结果队列**：Redis Streams 处理标签结果，提供签名校验、幂等入库、重投恢复、限次重试及管理员任务状态入口；独立采集命令支持 `--delivery queue`。
 - **MCP 工具服务**：官方 MCP SDK 提供 stdio 模型状态、显式 JPEG 分析工具和能力资源，不自动访问摄像头或写入课堂数据库。

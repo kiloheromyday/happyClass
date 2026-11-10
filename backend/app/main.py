@@ -23,6 +23,10 @@ from backend.app.controllers.leaves import router as leaves_router
 from backend.app.controllers.extensions import router as extensions_router
 from backend.app.controllers.privacy import router as privacy_router
 from backend.app.controllers.ai_queue import router as ai_queue_router
+from backend.app.emotion.replay.controller import router as replay_router
+from backend.app.emotion.insights.controller import router as insights_router
+from backend.app.emotion.lab.controller import router as lab_router
+from backend.app.emotion.lab import runtime as lab_runtime
 from backend.app.errors import AppError, app_error_handler, validation_error_handler, http_error_handler
 from backend.app.repositories.database import PROJECT_ROOT, initialize_database
 
@@ -30,7 +34,11 @@ from backend.app.repositories.database import PROJECT_ROOT, initialize_database
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     initialize_database()
-    yield
+    lab_worker = lab_runtime.start()
+    try:
+        yield
+    finally:
+        lab_runtime.shutdown(lab_worker)
 
 
 app = FastAPI(
@@ -56,6 +64,9 @@ app.include_router(leaves_router)
 app.include_router(extensions_router)
 app.include_router(privacy_router)
 app.include_router(ai_queue_router)
+app.include_router(replay_router)
+app.include_router(insights_router)
+app.include_router(lab_router)
 app.add_exception_handler(AppError, app_error_handler)
 app.add_exception_handler(RequestValidationError, validation_error_handler)
 app.add_exception_handler(HTTPException, http_error_handler)
