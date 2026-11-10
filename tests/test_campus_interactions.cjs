@@ -33,7 +33,8 @@ const mount = (component, props) => { const root = node('root'), app = renderer.
     const evening = cells.find(n => n.props['data-day'] === monday && n.props['data-slot'] === 5);
     assert(text(evening).includes('音乐欣赏') && text(evening).includes('20:15'));
     await find(mounted.root, n => String(n.props['aria-label'] || '').startsWith('查看课表课堂：12 ')).props.onClick(); await nextTick();
-    assert(text(mounted.root).includes('名单 20 人') && text(mounted.root).includes('课堂评价 0 条'));
+    assert(text(mounted.root).includes('名单 20 人') && text(mounted.root).includes('表情反馈 0 条'));
+    assert(!text(mounted.root).includes('课堂评价 0 条'));
     await button(mounted.root, '本节评价统计').props.onClick(); assert.deepEqual(navigation.at(-1), { tab: 'reports', courseId: 2, sessionId: 12 });
     field(mounted.root, 'campus_department').props.onChange({ target: { value: 'math' } }); await nextTick();
     assert(!walk(mounted.root).some(n => String(n.props['aria-label'] || '').startsWith('查看课表课堂：12 ')));

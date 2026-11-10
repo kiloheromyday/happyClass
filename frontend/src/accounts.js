@@ -16,6 +16,7 @@ import { EvaluationsPanel } from './evaluations.js';
 import { MessagesPanel } from './messages.js';
 import { CatalogPanel } from './catalog.js';
 import { createPoller } from './polling.js';
+import { PrivacyPanel } from './privacy.js';
 
 export const roleNames = { STUDENT: '学生', TEACHER: '教师', ADMIN: '管理员' };
 const field = (label, name, value, setter, options = {}) => h('label', { class: 'field' }, [h('span', label), h('input', { name, value, onInput: event => setter(event.target.value), ...options })]);
@@ -140,9 +141,10 @@ export const Workspace = {
       catch (failure) { handleError(failure); }
       finally { logoutBusy.value = false; }
     }
-    const navIcons = { evaluations: 'chart', messages: 'history', catalog: 'book', leaves: 'book', campus: 'dashboard', teaching: 'book', notes: 'book', overview: 'profile', buddies: 'users', classroom: 'classroom', dashboard: 'dashboard', reports: 'chart', history: 'history', users: 'users', courses: 'book', password: 'lock' };
+    const navIcons = { privacy: 'lock', evaluations: 'chart', messages: 'history', catalog: 'book', leaves: 'book', campus: 'dashboard', teaching: 'book', notes: 'book', overview: 'profile', buddies: 'users', classroom: 'classroom', dashboard: 'dashboard', reports: 'chart', history: 'history', users: 'users', courses: 'book', password: 'lock' };
     const navItem = (id, text) => h('button', { type: 'button', class: { selected: tab.value === id }, 'aria-current': tab.value === id ? 'page' : undefined, onClick: () => selectTab(id), disabled: changing.value || loading.value }, [icon(navIcons[id], 18), h('span', text), id === 'messages' && unreadCount.value ? h('span', { class: 'nav-unread', 'aria-label': `${unreadCount.value}条未读消息` }, unreadCount.value > 99 ? '99+' : String(unreadCount.value)) : null, tab.value === id ? h('span', { class: 'nav-current', 'aria-hidden': 'true' }) : null]);
     function content() {
+      if (tab.value === 'privacy') return h(PrivacyPanel, { user: props.user, onDirtyChange: value => { extensionDirty.value = value; if (!value) error.value = ''; }, onExpired: () => emit('session-ended', '登录已过期，请重新登录。') });
       if (tab.value === 'evaluations') return h(EvaluationsPanel, { key: `evaluations:${navigation.value.sessionId || ''}:${navigation.value.courseId || ''}`, user: props.user, initialSessionId: navigation.value.sessionId, initialCourseId: navigation.value.courseId, initialDataScope: navigation.value.dataScope, onDirtyChange: value => { extensionDirty.value = value; if (!value) error.value = ''; }, onNavigate: selectTab, onExpired: () => emit('session-ended', '登录已过期，请重新登录。') });
       if (tab.value === 'messages') return h(MessagesPanel, { onNavigate: selectTab, onUnreadChange: value => { unreadRevision += 1; unreadCount.value = value; }, onExpired: () => emit('session-ended', '登录已过期，请重新登录。') });
       if (tab.value === 'catalog' && props.user.role === 'ADMIN') return h(CatalogPanel, { onDirtyChange: value => { extensionDirty.value = value; if (!value) error.value = ''; }, onNavigate: selectTab, onExpired: () => emit('session-ended', '登录已过期，请重新登录。') });
@@ -173,11 +175,11 @@ export const Workspace = {
     }
     return () => h('section', { class: 'workspace' }, [h('aside', { class: 'workspace-nav' }, [
       h('div', { class: 'workspace-identity' }, [h(Avatar, { person: props.user, variant: 'avatar' }), h('div', { class: 'identity-text' }, [h('strong', { title: props.user.username }, props.user.nickname || props.user.username), h('span', { class: 'role-badge' }, roleNames[props.user.role])])]),
-      h('nav', { 'aria-label': '工作台导航' }, [h('span', { class: 'nav-label' }, '课堂空间'), navItem('messages', '消息中心'), navItem('evaluations', '课程评价'), props.user.role === 'ADMIN' ? navItem('campus', '开课总览') : null, props.user.role !== 'STUDENT' ? navItem('teaching', '教学工作台') : null, navItem('leaves', props.user.role === 'STUDENT' ? '请假申请' : props.user.role === 'TEACHER' ? '请假审批' : '请假记录'), navItem('classroom', props.user.role === 'ADMIN' ? '课程与课堂' : props.user.role === 'TEACHER' ? '课堂反馈' : '我的课堂'), props.user.role !== 'STUDENT' ? navItem('dashboard', '实时看板') : null, props.user.role !== 'STUDENT' ? navItem('reports', '统计与导出') : null, props.user.role === 'STUDENT' ? navItem('history', '情绪历史') : null, props.user.role === 'STUDENT' ? navItem('notes', '笔记与回顾') : null, props.user.role === 'STUDENT' ? navItem('buddies', '好友学伴') : null, props.user.role === 'ADMIN' ? navItem('users', '用户列表') : null, props.user.role === 'ADMIN' ? navItem('catalog', '院系与课程维护') : null, navItem('courses', props.user.role === 'ADMIN' ? '全校课程' : '我的课程'), h('span', { class: 'nav-label nav-label-account' }, '我的账户'), navItem('overview', '个人资料'), navItem('password', '账号安全')]),
+      h('nav', { 'aria-label': '工作台导航' }, [h('span', { class: 'nav-label' }, '课堂空间'), navItem('messages', '消息中心'), navItem('privacy', '反馈隐私'), navItem('evaluations', '课程评价'), props.user.role === 'ADMIN' ? navItem('campus', '开课总览') : null, props.user.role !== 'STUDENT' ? navItem('teaching', '教学工作台') : null, navItem('leaves', props.user.role === 'STUDENT' ? '请假申请' : props.user.role === 'TEACHER' ? '请假审批' : '请假记录'), navItem('classroom', props.user.role === 'ADMIN' ? '课程与课堂' : props.user.role === 'TEACHER' ? '课堂反馈' : '我的课堂'), props.user.role !== 'STUDENT' ? navItem('dashboard', '实时看板') : null, props.user.role !== 'STUDENT' ? navItem('reports', '统计与导出') : null, props.user.role === 'STUDENT' ? navItem('history', '情绪历史') : null, props.user.role === 'STUDENT' ? navItem('notes', '笔记与回顾') : null, props.user.role === 'STUDENT' ? navItem('buddies', '好友学伴') : null, props.user.role === 'ADMIN' ? navItem('users', '用户列表') : null, props.user.role === 'ADMIN' ? navItem('catalog', '院系与课程维护') : null, navItem('courses', props.user.role === 'ADMIN' ? '全校课程' : '我的课程'), h('span', { class: 'nav-label nav-label-account' }, '我的账户'), navItem('overview', '个人资料'), navItem('password', '账号安全')]),
       h('button', { type: 'button', class: 'logout-button', onClick: logout, disabled: logoutBusy.value || changing.value }, [icon('logout', 17), h('span', logoutBusy.value ? '正在退出…' : '退出登录')]),
     ]), h('div', { class: 'workspace-content', 'aria-busy': loading.value }, [
       slots.developer?.(),
-      ['evaluations', 'messages', 'catalog', 'leaves', 'campus', 'teaching', 'classroom', 'history', 'dashboard', 'reports', 'notes', 'buddies', 'overview', 'courses'].includes(tab.value) ? notice(error.value) : null,
+      ['privacy', 'evaluations', 'messages', 'catalog', 'leaves', 'campus', 'teaching', 'classroom', 'history', 'dashboard', 'reports', 'notes', 'buddies', 'overview', 'courses'].includes(tab.value) ? notice(error.value) : null,
       content(),
     ])]);
   },

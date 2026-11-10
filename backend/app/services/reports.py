@@ -7,6 +7,7 @@ from backend.app.models.classroom import Emotion, now_utc, utc_text
 from backend.app.models.reports import ReportFilters
 from backend.app.repositories import classroom, reports
 from backend.app.repositories.database import connect
+from backend.app.repositories.privacy import protect_records, require_detail_export
 from backend.app.services.classroom import accessible_session, session_view
 
 MAX_EXPORT_ROWS = 50_000
@@ -116,6 +117,8 @@ def export_csv(user, filters):
         if count > MAX_EXPORT_ROWS:
             raise AppError(422, 'EXPORT_TOO_LARGE', '导出最多支持 50000 条，请缩短时间范围或增加筛选条件')
         records = reports.export_records(connection, user, filters)
+        require_detail_export(connection, records)
+        records = protect_records(connection, records, user)
         buffer = StringIO(newline='')
         writer = csv.writer(buffer)
         writer.writerow(['记录ID', '课程ID', '课程', '课堂ID', '班级', '教室', '用户ID', '用户名', '情绪', '来源', '置信度', '记录时间UTC', '演示数据'])

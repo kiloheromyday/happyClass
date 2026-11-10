@@ -1,0 +1,60 @@
+name: HappyClass checks
+on: [push, pull_request, workflow_dispatch]
+permissions:
+  contents: read
+concurrency:
+  group: checks-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  tests:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    services:
+      redis:
+        image: redis:8.2-alpine
+        ports: ["6379:6379"]
+        options: --health-cmd "redis-cli ping" --health-interval 5s --health-timeout 3s --health-retries 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.13', cache: pip}
+      - uses: actions/setup-node@v4
+        with: {node-version: '24', cache: npm, cache-dependency-path: frontend/package-lock.json}
+      - run: pip install -r requirements-lock.txt -r requirements-extensions-test.txt -r ai_service/requirements-ai-lock.txt
+      - run: python scripts/prepare_ai.py
+      - run: npm ci --ignore-scripts --no-audit --no-fund
+        working-directory: frontend
+      - run: npm run build
+        working-directory: frontend
+      - run: python -m pytest -q --junitxml=test-results.xml
+        env:
+          EMOJI_TEST_REDIS_URL: redis://127.0.0.1:6379/15
+      - run: for test in tests/test_*.cjs; do node "$test" || exit 1; done
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with: {name: test-results, path: test-results.xml}
+  containers:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - name: Prepare temporary container secrets
+        run: |
+          mkdir -p .docker/secrets
+          python -c "import secrets,pathlib; [pathlib.Path('.docker/secrets', n+'.token').write_text(secrets.token_urlsafe(48)) for n in ('ai-service','ai-ingest')]"
+      - run: docker compose --profile ai --profile mcp config --quiet
+      - run: docker compose up --build --detach --wait
+      - name: Check live web and queue worker
+        run: |
+          curl --fail http://127.0.0.1:18090/api/health
+          docker compose exec -T worker python -c "import time; from ai_service.result_queue import get_queue; q=get_queue(); ready=any(q.overview()['worker_heartbeat'] or time.sleep(1) for _ in range(15)); assert ready"
+      - name: Build and start the real model service
+        run: docker compose --profile ai up --build --detach --wait
+      - name: Check the model service is ready
+        run: docker compose exec -T web python -c "import json,urllib.request; assert json.load(urllib.request.urlopen('http://ai:18081/health'))['data']['ready']"
+      - name: Container logs
+        if: failure()
+        run: docker compose --profile ai logs --no-color
+      - name: Stop temporary containers
+        if: always()
+        run: docker compose --profile ai down --volumes

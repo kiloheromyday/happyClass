@@ -333,3 +333,11 @@ CREATE TABLE IF NOT EXISTS course_creation_keys (
     payload_hash TEXT NOT NULL,
     PRIMARY KEY (user_id, request_id)
 );
+
+CREATE TABLE IF NOT EXISTS session_privacy (
+    session_id INTEGER PRIMARY KEY REFERENCES class_sessions(id),
+    mode TEXT NOT NULL CHECK(mode IN ('STANDARD','ANONYMOUS','AGGREGATE')),
+    version INTEGER NOT NULL CHECK(version>=1),
+    updated_at TEXT NOT NULL,
+    updated_by INTEGER NOT NULL REFERENCES users(id)
+);

@@ -10,7 +10,7 @@ sys.path.insert(0, str(ROOT))
 from ai_service.config import MODEL_SHA256
 
 
-def main():
+def ensure_model():
     model = ROOT / 'ai_service/models/emotion-ferplus-8.onnx'
     model.parent.mkdir(parents=True, exist_ok=True)
     if not model.exists() or hashlib.sha256(model.read_bytes()).hexdigest() != MODEL_SHA256:
@@ -20,6 +20,11 @@ def main():
         if hashlib.sha256(data).hexdigest() != MODEL_SHA256:
             raise RuntimeError('Downloaded model checksum mismatch')
         model.write_bytes(data)
+    return model
+
+
+def main():
+    ensure_model()
     for filename in ('ai-service.token', 'ai-ingest.token'):
         credential = ROOT / 'data' / filename
         credential.parent.mkdir(parents=True, exist_ok=True)

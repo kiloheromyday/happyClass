@@ -68,9 +68,18 @@ powershell -ExecutionPolicy Bypass -File .\scripts\start.ps1
 
 ## 交接与后续工作
 
-交接版本 **0.21.1**，本轮真实截图与界面完善日期 **2026-11-09**。已补充管理员账号草稿保护、统计筛选后的重新查询提示和导出限制，并统一“表情反馈”数量名称，详见 [本次完善](docs/manual/README.md#walkthrough)。
+选做扩展版本 **0.22.0**，原交接版本 **0.21.1**；图文手册与界面完善日期 **2026-11-09**。已补充管理员账号草稿保护、统计筛选后的重新查询提示和导出限制，并统一“表情反馈”数量名称，详见 [本次完善](docs/manual/README.md#walkthrough)。
 
-可选 AI 已验证服务就绪及 JPEG 请求链路；**物理摄像头预览、连续识别、设备释放和另一台电脑部署仍待实机验收**。手动反馈及其他业务不依赖 AI 服务。当前数据库实现为 SQLite，MySQL / PostgreSQL、Docker 和公网部署尚未完成。
+可选 AI 已验证服务就绪及 JPEG 请求链路；**物理摄像头预览、连续识别、设备释放和另一台电脑部署仍待实机验收**。手动反馈及其他业务不依赖 AI 服务。当前数据库实现为 SQLite，MySQL / PostgreSQL 适配和公网部署尚未完成。Docker Compose 已完成本机容器运行验证；GitHub Actions 已在小组仓库通过[扩展分支检查](https://github.com/kiloheromyday/happyClass/actions/runs/42764849798)，不代表公网或其他电脑部署已验收。
+
+## 指导书 2.3 选做扩展
+
+- **匿名与聚合模式**：按课堂配置标准、匿名或仅聚合展示，覆盖反馈历史、看板与 CSV 导出。
+- **异步 AI 结果队列**：Redis Streams 处理标签结果，提供签名校验、幂等入库、重投恢复、限次重试及管理员任务状态入口；独立采集命令支持 `--delivery queue`。
+- **MCP 工具服务**：官方 MCP SDK 提供 stdio 模型状态、显式 JPEG 分析工具和能力资源，不自动访问摄像头或写入课堂数据库。
+- **Docker Compose 与 CI**：多阶段镜像、一键启动脚本及自动化测试与容器检查流程。
+
+安装、页面入口、API 与故障恢复见 [选做扩展说明](docs/OPTIONAL_EXTENSIONS.md)。贡献范围及原有 AI 模型的复用边界见 [Lccccc679 工作记录](docs/CONTRIBUTION_Lccccc679.md)。扩展未训练新的情绪模型，不能据此宣称识别准确率提高。
 
 | 资料 | 用途 |
 | --- | --- |

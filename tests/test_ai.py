@@ -19,7 +19,7 @@ def inference(monkeypatch):
     async def predict(data):
         calls.append(data)
         return ai.InferenceResult(detected=4, processed=4, faces=[
-            {'emotion': 'HAPPY', 'confidence': .95}, {'emotion': 'SAD', 'confidence': .69},
+            {'emotion': 'HAPPY', 'confidence': .95}, {'emotion': 'SAD', 'confidence': .69, 'candidates': [{'emotion': 'SAD', 'confidence': .69}, {'emotion': 'ANGRY', 'confidence': .2}, {'emotion': 'NEUTRAL', 'confidence': .1}]},
             {'emotion': 'NEUTRAL', 'confidence': .70}, {'emotion': 'CONTEMPT', 'confidence': .99},
         ])
     monkeypatch.setattr(ai, 'run_inference', predict)
@@ -32,7 +32,11 @@ def test_ai_filter_idempotence_anonymity_and_statistics(actors, inference):
     identifier = str(uuid4())
     first = frame(actors['teacher'], session, request_id=identifier)
     assert first.status_code == 200
-    assert first.json()['data'] == {'detected': 4, 'processed': 4, 'saved': 2, 'filtered': 2, 'min_confidence': .7}
+    result = first.json()['data']
+    assert {key: result[key] for key in ('detected', 'processed', 'saved', 'filtered', 'min_confidence')} == {'detected': 4, 'processed': 4, 'saved': 2, 'filtered': 2, 'min_confidence': .7}
+    assert [(item['emotion'], item['reason']) for item in result['predictions']] == [
+        ('HAPPY', 'SAVED'), ('SAD', 'LOW_CONFIDENCE'), ('NEUTRAL', 'SAVED'), ('CONTEMPT', 'UNSUPPORTED_CLASS')]
+    assert result['predictions'][1]['candidates'][1] == {'emotion': 'ANGRY', 'confidence': .2}
     assert frame(actors['teacher'], session, request_id=identifier).json()['data'] == first.json()['data']
     assert len(inference) == 1
     assert frame(actors['teacher'], session, content=b'different', request_id=identifier).status_code == 409

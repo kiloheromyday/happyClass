@@ -1,4 +1,5 @@
 import json
+from backend.app.repositories.privacy import protect_records
 
 DEPARTMENT_FIELDS = """c.department_id,d.name AS department_name,d.short_name AS department_short,
  coalesce(d.color,'#637a50') AS department_color,coalesce(d.background,'#f0f4e9') AS department_background"""
@@ -6,7 +7,8 @@ COURSE_SELECT = "SELECT c.*,coalesce(nullif(p.nickname,''),u.username) AS teache
 SESSION_SELECT = """SELECT s.*,c.name AS course_name,c.teacher_id,c.is_demo,
  coalesce(nullif(p.nickname,''),u.username) AS teacher_name,""" + DEPARTMENT_FIELDS + """,
  (SELECT count(*) FROM schedule_users r WHERE r.session_id=s.id) AS scheduled_count,
- (SELECT count(*) FROM emoji_records e WHERE e.session_id=s.id) AS record_count
+ (SELECT count(*) FROM emoji_records e WHERE e.session_id=s.id) AS record_count,
+ coalesce((SELECT mode FROM session_privacy WHERE session_id=s.id),'STANDARD') AS privacy_mode
  FROM class_sessions s JOIN courses c ON c.id=s.course_id JOIN users u ON u.id=c.teacher_id
  LEFT JOIN user_profiles p ON p.user_id=u.id LEFT JOIN departments d ON d.id=c.department_id"""
 RECORD_SELECT = """SELECT e.*,u.username,c.name AS course_name,s.class_name,s.classroom
@@ -130,6 +132,8 @@ def history(connection, user, session_id, limit, offset, data_scope='ALL'):
     elif user['role'] == 'TEACHER':
         conditions.append('c.teacher_id=?')
         values.append(user['id'])
+    if user['role'] != 'STUDENT':
+        conditions.append("NOT EXISTS(SELECT 1 FROM session_privacy p WHERE p.session_id=s.id AND p.mode='AGGREGATE')")
     if session_id is not None:
         conditions.append('e.session_id=?')
         values.append(session_id)
@@ -139,7 +143,7 @@ def history(connection, user, session_id, limit, offset, data_scope='ALL'):
     where = ' WHERE ' + ' AND '.join(conditions) if conditions else ''
     count = connection.execute('SELECT count(*) FROM emoji_records e JOIN class_sessions s ON s.id=e.session_id JOIN courses c ON c.id=s.course_id' + where, values).fetchone()[0]
     records = rows(connection.execute(RECORD_SELECT + where + ' ORDER BY e.recorded_at DESC,e.id DESC LIMIT ? OFFSET ?', (*values, limit, offset)))
-    return {'items': records, 'total': count, 'limit': limit, 'offset': offset}
+    return {'items': protect_records(connection, records, user), 'total': count, 'limit': limit, 'offset': offset}
 
 
 def statistics(connection, session_id, data_scope='ALL'):

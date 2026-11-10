@@ -11,8 +11,9 @@ def local_token(environment_name, filename):
     token = os.getenv(environment_name, '').strip()
     if not token:
         try:
-            token = (ROOT / 'data' / filename).read_text(encoding='utf-8').strip()
-        except FileNotFoundError:
+            path = Path(os.environ[environment_name + '_FILE']) if os.getenv(environment_name + '_FILE') else ROOT / 'data' / filename
+            token = path.read_text(encoding='utf-8').strip()
+        except (FileNotFoundError, PermissionError):
             return None
     return token if len(token) >= 32 else None
 
