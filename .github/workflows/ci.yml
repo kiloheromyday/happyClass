@@ -50,6 +50,8 @@ jobs:
           docker compose exec -T worker python -c "import time; from ai_service.result_queue import get_queue; q=get_queue(); ready=any(q.overview()['worker_heartbeat'] or time.sleep(1) for _ in range(15)); assert ready"
       - name: Build and start the real model service
         run: docker compose --profile ai up --build --detach --wait
+      - name: Check emotion services and a live durable report job
+        run: docker compose exec -T web python scripts/emotion/smoke_runtime.py --confirm-demo-data
       - name: Check the model service is ready
         run: docker compose exec -T web python -c "import json,urllib.request; assert json.load(urllib.request.urlopen('http://ai:18081/health'))['data']['ready']"
       - name: Container logs

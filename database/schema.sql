@@ -341,3 +341,109 @@ CREATE TABLE IF NOT EXISTS session_privacy (
     updated_at TEXT NOT NULL,
     updated_by INTEGER NOT NULL REFERENCES users(id)
 );
+
+CREATE TABLE IF NOT EXISTS emotion_insight_rules (
+    session_id INTEGER PRIMARY KEY REFERENCES class_sessions(id),
+    bucket_minutes INTEGER NOT NULL CHECK(bucket_minutes IN (1,5,10)),
+    min_records INTEGER NOT NULL CHECK(min_records BETWEEN 3 AND 1000),
+    concern_ratio REAL NOT NULL CHECK(concern_ratio BETWEEN 0.3 AND 1),
+    consecutive_windows INTEGER NOT NULL CHECK(consecutive_windows BETWEEN 2 AND 6),
+    version INTEGER NOT NULL CHECK(version >= 1),
+    updated_at TEXT NOT NULL
+);
+CREATE TABLE IF NOT EXISTS emotion_insight_entries (
+    id INTEGER PRIMARY KEY,
+    session_id INTEGER NOT NULL REFERENCES class_sessions(id),
+    kind TEXT NOT NULL CHECK(kind IN ('PHASE','ACTION')),
+    title TEXT NOT NULL CHECK(length(title) BETWEEN 1 AND 120),
+    content TEXT NOT NULL CHECK(length(content) <= 2000),
+    start_minute INTEGER NOT NULL CHECK(start_minute >= 0),
+    end_minute INTEGER NOT NULL CHECK(end_minute >= start_minute),
+    status TEXT NOT NULL CHECK(status IN ('PLANNED','DONE','CANCELLED')),
+    outcome TEXT NOT NULL DEFAULT '' CHECK(length(outcome) <= 2000),
+    version INTEGER NOT NULL CHECK(version >= 1),
+    created_by INTEGER NOT NULL REFERENCES users(id),
+    created_at TEXT NOT NULL,
+    updated_at TEXT NOT NULL,
+    request_id TEXT NOT NULL,
+    payload_hash TEXT NOT NULL,
+    UNIQUE(session_id,request_id)
+);
+CREATE INDEX IF NOT EXISTS idx_insight_entries_session ON emotion_insight_entries(session_id,start_minute,id);
+
+CREATE TABLE IF NOT EXISTS lab_studies (
+    id INTEGER PRIMARY KEY,
+    owner_id INTEGER NOT NULL REFERENCES users(id),
+    title TEXT NOT NULL,
+    question TEXT NOT NULL,
+    tags TEXT NOT NULL,
+    definition TEXT NOT NULL,
+    version INTEGER NOT NULL DEFAULT 1 CHECK(version>=1),
+    archived INTEGER NOT NULL DEFAULT 0 CHECK(archived IN (0,1)),
+    request_id TEXT NOT NULL,
+    payload_hash TEXT NOT NULL,
+    created_at TEXT NOT NULL,
+    updated_at TEXT NOT NULL,
+    UNIQUE(owner_id,request_id)
+);
+CREATE INDEX IF NOT EXISTS idx_lab_studies_owner ON lab_studies(owner_id,archived,updated_at);
+CREATE TABLE IF NOT EXISTS lab_jobs (
+    id INTEGER PRIMARY KEY,
+    study_id INTEGER NOT NULL REFERENCES lab_studies(id),
+    owner_id INTEGER NOT NULL REFERENCES users(id),
+    title TEXT NOT NULL,
+    definition TEXT NOT NULL,
+    study_version INTEGER NOT NULL,
+    state TEXT NOT NULL CHECK(state IN ('QUEUED','RUNNING','SUCCEEDED','FAILED','CANCELLED')),
+    progress INTEGER NOT NULL DEFAULT 0 CHECK(progress BETWEEN 0 AND 100),
+    attempts INTEGER NOT NULL DEFAULT 0,
+    cancel_requested INTEGER NOT NULL DEFAULT 0 CHECK(cancel_requested IN (0,1)),
+    lease_token TEXT,
+    lease_until TEXT,
+    error_code TEXT,
+    request_id TEXT NOT NULL,
+    payload_hash TEXT NOT NULL,
+    report_id INTEGER,
+    created_at TEXT NOT NULL,
+    updated_at TEXT NOT NULL,
+    UNIQUE(owner_id,request_id)
+);
+CREATE INDEX IF NOT EXISTS idx_lab_jobs_claim ON lab_jobs(state,lease_until,created_at);
+CREATE TABLE IF NOT EXISTS lab_job_events (
+    id INTEGER PRIMARY KEY,
+    job_id INTEGER NOT NULL REFERENCES lab_jobs(id),
+    code TEXT NOT NULL,
+    message TEXT NOT NULL,
+    progress INTEGER NOT NULL,
+    created_at TEXT NOT NULL
+);
+CREATE INDEX IF NOT EXISTS idx_lab_events_job ON lab_job_events(job_id,id);
+CREATE TABLE IF NOT EXISTS lab_reports (
+    id INTEGER PRIMARY KEY,
+    job_id INTEGER NOT NULL UNIQUE REFERENCES lab_jobs(id),
+    study_id INTEGER NOT NULL REFERENCES lab_studies(id),
+    owner_id INTEGER NOT NULL REFERENCES users(id),
+    title TEXT NOT NULL,
+    definition TEXT NOT NULL,
+    result TEXT NOT NULL,
+    fingerprint TEXT NOT NULL,
+    status TEXT NOT NULL DEFAULT 'DRAFT' CHECK(status IN ('DRAFT','REVIEWED','ARCHIVED')),
+    bookmarked INTEGER NOT NULL DEFAULT 0 CHECK(bookmarked IN (0,1)),
+    conclusion TEXT NOT NULL DEFAULT '',
+    version INTEGER NOT NULL DEFAULT 1 CHECK(version>=1),
+    created_at TEXT NOT NULL,
+    updated_at TEXT NOT NULL
+);
+CREATE INDEX IF NOT EXISTS idx_lab_reports_owner ON lab_reports(owner_id,status,created_at);
+CREATE TABLE IF NOT EXISTS lab_annotations (
+    id INTEGER PRIMARY KEY,
+    report_id INTEGER NOT NULL REFERENCES lab_reports(id),
+    section TEXT NOT NULL CHECK(section IN ('FINDING','CONTEXT','LIMITATION','NEXT_STEP')),
+    content TEXT NOT NULL,
+    version INTEGER NOT NULL DEFAULT 1 CHECK(version>=1),
+    request_id TEXT NOT NULL,
+    payload_hash TEXT NOT NULL,
+    created_at TEXT NOT NULL,
+    updated_at TEXT NOT NULL,
+    UNIQUE(report_id,request_id)
+);

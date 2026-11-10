@@ -20,6 +20,7 @@ services:
       EMOJI_AI_INGEST_TOKEN_FILE: /run/secrets/ai_ingest
       EMOJI_REDIS_URL: redis://redis:6379/0
       EMOJI_DATABASE_PATH: /app/data/classroom.db
+      EMOJI_LAB_WORKER: '1'
     volumes: ["app_data:/app/data"]
     secrets: [ai_service, ai_ingest]
     depends_on:
