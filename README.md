@@ -79,7 +79,7 @@ powershell -ExecutionPolicy Bypass -File .\scripts\start.ps1
 - **MCP 工具服务**：官方 MCP SDK 提供 stdio 模型状态、显式 JPEG 分析工具和能力资源，不自动访问摄像头或写入课堂数据库。
 - **Docker Compose 与 CI**：多阶段镜像、一键启动脚本及自动化测试与容器检查流程。
 
-安装、页面入口、API 与故障恢复见 [选做扩展说明](docs/OPTIONAL_EXTENSIONS.md)。贡献范围及原有 AI 模型的复用边界见 [Lccccc679 工作记录](docs/CONTRIBUTION_Lccccc679.md)。扩展未训练新的情绪模型，不能据此宣称识别准确率提高。
+安装、页面入口、API 与故障恢复见 [选做扩展说明](docs/OPTIONAL_EXTENSIONS.md)。贡献范围及原有 AI 模型的复用边界见 [Lccccc679 工作记录](docs/CONTRIBUTION_Lccccc679.md)。
 
 | 资料 | 用途 |
 | --- | --- |
