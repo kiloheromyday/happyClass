@@ -135,6 +135,7 @@ export const AnalyticsPanel = {
       !props.realtime && draft.session_id ? h('p', { class: 'data-note' }, [`当前仅统计所选课堂 #${draft.session_id}。`, h('button', { class: 'quiet-button', disabled: loading.value || exporting.value, onClick: () => { draft.session_id = ''; loadReport(); } }, '查看整门课程')]) : null,
       props.realtime && selected.value ? h('button', { class: 'quiet-button', onClick: () => emit('navigate', { tab: 'classroom', sessionId: Number(selected.value), courseId: sessions.value.find(item => item.id === Number(selected.value))?.course_id }) }, '打开对应课堂') : null,
       props.realtime ? dashboardControls() : filterForm(),
+      props.realtime && selected.value ? h('button', { type: 'button', class: 'secondary-button replay-entry', onClick: () => emit('navigate', { tab: 'replay', sessionId: Number(selected.value) }) }, [icon('history', 17), '打开情绪回放']) : null,
       error.value ? h('div', { class: 'form-notice', role: 'alert' }, `${error.value}${data.value ? ' 当前保留上次成功查询的数据。' : ''}`) : null,
       message.value ? h('div', { class: 'form-notice success', role: 'status' }, message.value) : null,
       loading.value ? h('p', { class: 'muted', role: 'status' }, '正在获取数据…') : null,

@@ -74,7 +74,7 @@ powershell -ExecutionPolicy Bypass -File .\scripts\start.ps1
 
 ## 指导书 2.3 选做扩展
 
-新增的课堂回放、教学洞察和多课堂分析**后端服务**统一放在 `backend/app/emotion/`，配套测试、工具和说明分别放在 `tests/emotion/`、`scripts/emotion/`、[docs/emotion](docs/emotion/README.md)。本次不包含新增前端，原有页面和样式保持不变；新增功能可通过现有 `/docs` 接口文档调用，Compose 已启用报告任务工作进程。
+新增的课堂回放、教学洞察和多课堂分析后端统一放在 `backend/app/emotion/`，配套测试、工具和说明分别放在 `tests/emotion/`、`scripts/emotion/`、[docs/emotion](docs/emotion/README.md)。教师和管理员已可通过侧栏进入「情绪回放」和「情绪洞察」，功能页位于 `frontend/src/emotion/` 并沿用原有风格。登录页、课程总览及全局样式保留原版；多课堂分析实验室暂通过 `/docs` 调用，Compose 已启用报告任务工作进程。
 
 - **匿名与聚合模式**：按课堂配置标准、匿名或仅聚合展示，覆盖反馈历史、看板与 CSV 导出。
 - **异步 AI 结果队列**：Redis Streams 处理标签结果，提供签名校验、幂等入库、重投恢复、限次重试及管理员任务状态入口；独立采集命令支持 `--delivery queue`。
