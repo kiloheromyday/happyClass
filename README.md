@@ -42,9 +42,9 @@
 
 | 身份 | 主要功能 | 图文入口 |
 | --- | --- | --- |
-| 学生 | 课程与周课表、加入课程、表情反馈、四项评价、匿名提问、学习指引、提交情绪反馈、填写回访 | [课程与课堂](docs/manual/README.md#scene-04) · [提交反馈](docs/emotion/guide/submit-feedback.md) · [填写回访](docs/emotion/guide/review-feedback.md) |
+| 学生 | 课程与周课表、加入课程、表情反馈、四项评价、匿名提问、学习指引、提交情绪反馈、填写回访、课堂卡点书签与课后复习 | [课程与课堂](docs/manual/README.md#scene-04) · [提交反馈](docs/emotion/guide/submit-feedback.md) · [填写回访](docs/emotion/guide/review-feedback.md) · [记书签与复习](docs/emotion/guide/student-bookmarks.md) |
 | 学生个人空间 | 私人笔记、查询与 CSV 导出、日期回顾、资料与头像裁剪、好友学伴、留言墙、请假、站内消息 | [笔记与回顾](docs/manual/README.md#scene-11) · [学伴与留言](docs/manual/README.md#scene-16) |
-| 教师 | 课堂安排、课程邀请、问题回应、指引草稿与发布、请假审批、实时看板、统计导出、评价汇总、教学反思、追问反馈、批量回应、发起回访 | [教师完整流程](docs/manual/README.md#teacher) · [处理反馈](docs/emotion/guide/ask-student.md) · [分组与批量回应](docs/emotion/guide/batch-feedback.md) |
+| 教师 | 课堂安排、课程邀请、问题回应、指引草稿与发布、请假审批、实时看板、统计导出、评价汇总、教学反思、追问反馈、批量回应、发起回访、卡点统计与补学资料 | [教师完整流程](docs/manual/README.md#teacher) · [处理反馈](docs/emotion/guide/ask-student.md) · [分组与批量回应](docs/emotion/guide/batch-feedback.md) · [查看卡点与发资料](docs/emotion/guide/teacher-bookmarks.md) |
 | 管理员 | 全校开课与评价、院系配色、课程归档恢复、教师分配、账号创建、课堂名单、演示数据筛选 | [管理员完整流程](docs/manual/README.md#admin) |
 | 通用 | 登录与账号安全、角色权限、消息已读与跳转、本地演示身份切换 | [首次使用](docs/manual/README.md#common) |
 | 教师和管理员 | 情绪回放、教学调整前后对比、课堂反馈隐私 | [情绪回放](docs/emotion/guide/replay-emotion.md) · [情绪洞察](docs/emotion/guide/teaching-insights.md) · [反馈隐私](docs/emotion/guide/feedback-privacy.md) |

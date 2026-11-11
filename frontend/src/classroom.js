@@ -8,6 +8,7 @@ import { EmotionDistribution } from './charts.js';
 import { QuestionsPanel, RecapPanel } from './engagement.js';
 import { DataScope } from './data-scope.js';
 import { LearningGuidePanel } from './learning-guide.js';
+import { QuickBookmark } from './emotion/bookmarks/quick.js';
 
 export const emotions = [
   ['HAPPY', '😊', '开心'], ['NEUTRAL', '😐', '平静'], ['SAD', '😔', '低落'],
@@ -247,6 +248,22 @@ export const ClassroomPanel = {
             });
           },
         }, student ? '给老师写条反馈' : '处理本节课堂的情绪反馈'),
+        student && h(QuickBookmark, {
+          key: current.value.id,
+          session: current.value,
+          disabled: hasDraft.value,
+          expired: () => emit('expired'),
+          onBusy: value => dirtyChange('bookmark', value),
+          onOpen: target => { if (mayLeave()) emit('navigate', target); },
+        }),
+        !student && view.value === 'overview' && h('button', {
+          type: 'button',
+          class: 'secondary-button',
+          disabled: hasDraft.value,
+          onClick: () => {
+            if (mayLeave()) emit('navigate', { tab: 'bookmarks', sessionId: current.value.id, view: 'timeline' });
+          },
+        }, '查看本节书签统计'),
         student ? studentFeedback() : view.value === 'overview' ? statistics() : null,
         !student && view.value === 'overview' ? h('div', { class: 'guide-actions' }, [h('button', { class: 'secondary-button', onClick: () => emit('navigate', { tab: 'dashboard', sessionId: Number(selected.value), courseId: current.value.course_id }) }, '打开本节实时看板'), h('button', { class: 'quiet-button', onClick: () => emit('navigate', { tab: 'reports', courseId: current.value.course_id }) }, '查看课程统计')]) : null,
         !student && view.value === 'overview' ? h(CameraPanel, { key: `${selected.value}:${current.value.status}`, sessionId: Number(selected.value), ongoing: current.value.status === 'ONGOING', onExpired: () => emit('expired'), onSaved: refreshAiFeedback }) : null,

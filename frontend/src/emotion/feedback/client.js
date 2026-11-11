@@ -66,7 +66,7 @@ export function useResource(loader, expired) {
   return { value, loading, error, load, clear, replace };
 }
 
-export function useCommand(expired) {
+export function useCommand(expired, resolveUrl = url) {
   const busy = ref(false);
   const error = ref('');
   const conflict = ref(false);
@@ -78,7 +78,7 @@ export function useCommand(expired) {
   async function run(path, payload, settings = {}) {
     if (busy.value) return null;
     const { method = 'POST', params, idempotent = true } = settings;
-    const endpoint = url(path, params);
+    const endpoint = resolveUrl(path, params);
     const fingerprint = JSON.stringify([endpoint, method, payload]);
     const requestId = last?.fingerprint === fingerprint
       ? last.requestId
