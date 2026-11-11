@@ -18,5 +18,6 @@ import './extensions.css';
 import './emotion/replay.css';
 import './emotion/insights.css';
 import './emotion/feedback/feedback.css';
+import './emotion/bookmarks/bookmarks.css';
 
 createApp(App).mount('#app');

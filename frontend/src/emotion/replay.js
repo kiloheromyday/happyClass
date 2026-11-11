@@ -1,6 +1,7 @@
 import { h, ref, computed, onMounted, onBeforeUnmount } from 'vue';
 import { api } from '../api.js';
 import { icon, moodFace } from '../ui.js';
+import { frameHasBookmarks, ReplayBookmarkOverlay } from './bookmarks/replay-overlay.js';
 
 const moods = [['HAPPY','开心','#b9abff'],['NEUTRAL','平静','#8bd8df'],['SURPRISED','惊讶','#a5e5cb'],['SAD','低落','#9dbcf7'],['ANGRY','生气','#f3a2b8'],['FEAR','担忧','#eac994'],['DISGUST','反感','#b9c99d']];
 const label = code => moods.find(item => item[0] === code)?.[1] || code;
@@ -8,7 +9,7 @@ const clock = value => new Intl.DateTimeFormat('zh-CN', { timeZone:'Asia/Shangha
 const fullStamp = value => new Intl.DateTimeFormat('zh-CN', { timeZone:'Asia/Shanghai', month:'numeric', day:'numeric', hour:'2-digit', minute:'2-digit', hour12:false }).format(new Date(value));
 
 export const ReplayPanel = {
-  props: ['initialSessionId'], emits: ['expired', 'navigate'],
+  props: ['initialSessionId', 'initialMinute'], emits: ['expired', 'navigate'],
   setup(props, { emit }) {
     const sessions = ref([]), selected = ref(props.initialSessionId ? String(props.initialSessionId) : '');
     const source = ref('ALL'), scope = ref('ALL'), bucket = ref('1');
@@ -17,6 +18,10 @@ export const ReplayPanel = {
     const frames = computed(() => data.value?.frames || []);
     const current = computed(() => frames.value[index.value]);
     const dominant = computed(() => current.value?.dominant_emotions || []);
+    const canPlay = computed(() => frames.value.length > 1 && frames.value.some(frame =>
+      frame.total || frameHasBookmarks(frame),
+    ));
+    const hasStudyMarkers = computed(() => frames.value.some(frameHasBookmarks));
     const peak = computed(() => Math.max(1, ...frames.value.map(frame => frame.total)));
     const moment = computed(() => current.value ? `${clock(current.value.from_time)} — ${clock(current.value.to_time)}` : '—');
     const progress = computed(() => frames.value.length > 1 ? index.value / (frames.value.length-1)*100 : 0);
@@ -24,7 +29,7 @@ export const ReplayPanel = {
     function seek(value) { pause(); index.value = Math.max(0, Math.min(frames.value.length-1, Number(value) || 0)); }
     function play() {
       if (playing.value) { pause(); return; }
-      if (frames.value.length < 2 || !data.value.summary.total) return;
+      if (!canPlay.value) return;
       if (index.value >= frames.value.length-1) index.value = 0;
       playing.value = true;
       timer = setInterval(() => {
@@ -45,7 +50,15 @@ export const ReplayPanel = {
         if (!selected.value) return;
         const query = new URLSearchParams({source:source.value,data_scope:scope.value,bucket_minutes:bucket.value});
         const result = await api(`/api/sessions/${selected.value}/emotion-replay?${query}`, {signal:request.signal});
-        if (alive && !request.signal.aborted) { data.value = result.data; index.value = Math.max(0,result.data.frames.findIndex(frame => frame.total > 0)); }
+        if (alive && !request.signal.aborted) {
+          data.value = result.data;
+          const requestedMinute = selected.value === String(props.initialSessionId) ? props.initialMinute : null;
+          if (Number.isInteger(requestedMinute) && requestedMinute >= 0) {
+            seek(Math.floor(requestedMinute / result.data.bucket_minutes));
+          } else {
+            index.value = Math.max(0, result.data.frames.findIndex(frame => frame.total > 0 || frameHasBookmarks(frame)));
+          }
+        }
       } catch (failure) { if (alive && !request.signal.aborted) { if (failure.status === 401) emit('expired'); else error.value = failure.message; } }
       finally { if (controller === request) loading.value = false; }
     }
@@ -88,17 +101,36 @@ export const ReplayPanel = {
         ]),
         h('section',{class:'replay-player','aria-label':'情绪时间轴播放器'},[
           h('div',{class:'replay-transport'},[
-            h('button',{class:'replay-play',type:'button',disabled:frames.value.length<2||!data.value.summary.total,onClick:play,'aria-pressed':playing.value},[h('span',{'aria-hidden':'true'},playing.value?'Ⅱ':'▶'),playing.value?'暂停':'播放回放']),
+            h('button',{class:'replay-play',type:'button',disabled:!canPlay.value,onClick:play,'aria-pressed':playing.value},[h('span',{'aria-hidden':'true'},playing.value?'Ⅱ':'▶'),playing.value?'暂停':'播放回放']),
             h('button',{class:'secondary-button',type:'button',disabled:!canJump(-1),onClick:()=>jump(-1),'aria-label':'上个有反馈时刻'},'← 上个时刻'),
             h('button',{class:'secondary-button',type:'button',disabled:!canJump(1),onClick:()=>jump(1),'aria-label':'下个有反馈时刻'},'下个时刻 →'),
             h('label',{class:'replay-speed'},['播放速度',h('select',{name:'replay_speed',value:String(speed.value),onChange:event=>setSpeed(event.target.value)},[1,2,4].map(value=>h('option',{value:String(value)},`${value}×`)))]),
           ]),
-          h('div',{class:'replay-density','aria-label':'各时段反馈数量'},frames.value.map((frame,i)=>h('button',{type:'button',class:{selected:i===index.value,empty:!frame.total},style:{height:`${frame.total?Math.max(8,frame.total/peak.value*100):5}%`},title:`${clock(frame.from_time)} · ${frame.total} 条`,tabindex:i===index.value?0:-1,'aria-label':`${clock(frame.from_time)}，${frame.total} 条反馈`,onClick:()=>seek(i)},h('span',{class:'sr-only'},String(frame.total))))),
+          h('div', { class: 'replay-density', 'aria-label': '各时段反馈数量' }, frames.value.map((frame, i) => {
+            const marked = frameHasBookmarks(frame);
+            const note = marked ? '，' + (frame.bookmark_count || 0) + ' 条书签' : '';
+            return h('button', {
+              type: 'button',
+              class: { selected: i === index.value, empty: !frame.total, 'has-study-marker': marked },
+              style: { height: frame.total ? Math.max(8, frame.total / peak.value * 100) + '%' : marked ? '18%' : '5%' },
+              title: clock(frame.from_time) + ' · ' + frame.total + ' 条反馈' + note,
+              tabindex: i === index.value ? 0 : -1,
+              'aria-label': clock(frame.from_time) + '，' + frame.total + ' 条反馈' + note,
+              onClick: () => seek(i),
+            }, h('span', { class: 'sr-only' }, String(frame.total)));
+          })),
           h('input',{class:'replay-slider',type:'range',min:0,max:Math.max(0,frames.value.length-1),step:1,value:index.value,disabled:frames.value.length<2,'aria-label':'拖动课堂情绪时间轴','aria-valuetext':`${moment.value}，${current.value.total} 条反馈`,style:{'--replay-progress':`${progress.value}%`},onInput:event=>seek(event.target.value)}),
           h('div',{class:'replay-time-labels'},[h('span',fullStamp(data.value.window.from_time)),h('strong',`第 ${index.value+1} / ${frames.value.length} 段`),h('span',fullStamp(data.value.window.to_time))]),
           h('p',{class:'replay-player-hint'},`拖动滑块，或点击上方的小柱子跳转。1× 每秒推进一个时段，每段 ${data.value.bucket_minutes} 分钟。`),
+          hasStudyMarkers.value && h('p', { class: 'replay-player-hint' }, '带橙点的时段有书签或补学资料。'),
         ]),
         h('div',{class:'replay-moment-stats'},[h('div',[h('span','当前时段'),h('strong',`${current.value.total} 条`)]),h('div',[h('span','学生主动反馈'),h('strong',`${current.value.manual_count} 条`)]),h('div',[h('span','AI 识别记录'),h('strong',`${current.value.ai_count} 条`)])]),
+        frameHasBookmarks(current.value) && h(ReplayBookmarkOverlay, {
+          frame: current.value,
+          sessionId: Number(selected.value),
+          bucketMinutes: data.value.bucket_minutes,
+          onNavigate: value => { pause(); emit('navigate', value); },
+        }),
         h('p',{class:'replay-boundary-note'},`按表情记录的条数回放。画面里的卡通角色不对应学生。${data.value.includes_after_class?'包含下课后 30 分钟反馈窗口内的已有记录。':''}${data.value.bucket_minutes!==data.value.requested_bucket_minutes?'这节课较长，时间轴用了更宽的时段。':''}`),
         h('button',{type:'button',class:'quiet-button',onClick:()=>emit('navigate',{tab:'classroom',sessionId:Number(selected.value),courseId:data.value.session.course_id})},['打开对应课堂',icon('arrow',15)]),
         h('button',{type:'button',class:'secondary-button',onClick:()=>emit('navigate',{tab:'insights',sessionId:Number(selected.value)})},['查看课堂情绪洞察',icon('chart',15)]),

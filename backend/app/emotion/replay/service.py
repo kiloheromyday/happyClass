@@ -4,6 +4,7 @@ import math
 from backend.app.models.classroom import Emotion, now_utc, utc_text
 from backend.app.repositories.database import connect
 from backend.app.emotion.replay.repository import grouped_frames
+from backend.app.emotion.bookmarks.timeline import replay_overlay
 from backend.app.repositories.privacy import policy
 from backend.app.services.classroom import accessible_session, session_view, FEEDBACK_GRACE
 
@@ -41,6 +42,7 @@ def get_replay(session_id, user, bucket_minutes=1, source='ALL', data_scope='ALL
         for frame in frames:
             maximum = max(item['count'] for item in frame['emotions'])
             frame['dominant_emotions'] = [item['emotion'] for item in frame['emotions'] if maximum > 0 and item['count'] == maximum]
+        replay_overlay(connection, session, frames, seconds // 60, data_scope)
         return {'session': session_view(session), 'privacy_mode': policy(connection, session_id)['mode'],
                 'updated_at': utc_text(now), 'source': source, 'data_scope': data_scope,
                 'bucket_minutes': seconds // 60, 'requested_bucket_minutes': bucket_minutes,

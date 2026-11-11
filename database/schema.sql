@@ -606,3 +606,55 @@ CREATE TABLE IF NOT EXISTS feedback_saved_views (
     created_at TEXT NOT NULL,
     updated_at TEXT NOT NULL
 );
+
+CREATE TABLE IF NOT EXISTS classroom_bookmarks (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    session_id INTEGER NOT NULL REFERENCES class_sessions(id) ON DELETE CASCADE,
+    student_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    minute INTEGER NOT NULL CHECK(minute >= 0),
+    reason TEXT NOT NULL CHECK(reason IN ('REVISIT','PACE','EXAMPLE','CONCEPT','PRACTICE','OTHER')),
+    title TEXT NOT NULL DEFAULT '',
+    note TEXT NOT NULL DEFAULT '',
+    reviewed_at TEXT,
+    version INTEGER NOT NULL DEFAULT 1,
+    created_at TEXT NOT NULL,
+    updated_at TEXT NOT NULL,
+    UNIQUE(session_id,student_id,minute)
+);
+CREATE INDEX IF NOT EXISTS idx_bookmarks_session_minute
+    ON classroom_bookmarks(session_id,minute,reason);
+CREATE INDEX IF NOT EXISTS idx_bookmarks_student_time
+    ON classroom_bookmarks(student_id,updated_at DESC,id DESC);
+CREATE TABLE IF NOT EXISTS bookmark_materials (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    session_id INTEGER NOT NULL REFERENCES class_sessions(id) ON DELETE CASCADE,
+    creator_id INTEGER NOT NULL REFERENCES users(id),
+    start_minute INTEGER NOT NULL CHECK(start_minute >= 0),
+    end_minute INTEGER NOT NULL CHECK(end_minute > start_minute),
+    title TEXT NOT NULL,
+    content TEXT NOT NULL DEFAULT '',
+    links TEXT NOT NULL DEFAULT '[]',
+    state TEXT NOT NULL CHECK(state IN ('DRAFT','PUBLISHED','ARCHIVED')),
+    published_at TEXT,
+    version INTEGER NOT NULL DEFAULT 1,
+    created_at TEXT NOT NULL,
+    updated_at TEXT NOT NULL
+);
+CREATE INDEX IF NOT EXISTS idx_bookmark_materials_range
+    ON bookmark_materials(session_id,state,start_minute,end_minute);
+CREATE TABLE IF NOT EXISTS bookmark_material_progress (
+    material_id INTEGER NOT NULL REFERENCES bookmark_materials(id) ON DELETE CASCADE,
+    student_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    material_version INTEGER NOT NULL,
+    completed_at TEXT NOT NULL,
+    PRIMARY KEY(material_id,student_id)
+);
+CREATE TABLE IF NOT EXISTS bookmark_request_keys (
+    actor_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    request_id TEXT NOT NULL,
+    action TEXT NOT NULL,
+    fingerprint TEXT NOT NULL,
+    result_id INTEGER NOT NULL,
+    created_at TEXT NOT NULL,
+    PRIMARY KEY(actor_id,request_id)
+);
