@@ -447,3 +447,162 @@ CREATE TABLE IF NOT EXISTS lab_annotations (
     updated_at TEXT NOT NULL,
     UNIQUE(report_id,request_id)
 );
+
+CREATE TABLE IF NOT EXISTS feedback_cases (
+    id INTEGER PRIMARY KEY,
+    session_id INTEGER NOT NULL REFERENCES class_sessions(id),
+    author_id INTEGER NOT NULL REFERENCES users(id),
+    title TEXT NOT NULL,
+    content TEXT NOT NULL,
+    emotion TEXT NOT NULL,
+    reasons TEXT NOT NULL,
+    impact TEXT NOT NULL CHECK(impact IN ('LOW','MEDIUM','HIGH')),
+    topic_minute INTEGER,
+    linked_record_id INTEGER REFERENCES emoji_records(id) ON DELETE SET NULL,
+    state TEXT NOT NULL DEFAULT 'NEW' CHECK(state IN ('NEW','ACKNOWLEDGED','IN_PROGRESS','WAITING_STUDENT','WAITING_REVIEW','RESOLVED','WITHDRAWN')),
+    priority TEXT NOT NULL DEFAULT 'NORMAL' CHECK(priority IN ('NORMAL','HIGH')),
+    tags TEXT NOT NULL DEFAULT '[]',
+    version INTEGER NOT NULL DEFAULT 1,
+    is_demo INTEGER NOT NULL CHECK(is_demo IN (0,1)),
+    acknowledged_at TEXT,
+    first_response_at TEXT,
+    resolved_at TEXT,
+    resolution TEXT,
+    created_at TEXT NOT NULL,
+    updated_at TEXT NOT NULL
+);
+CREATE INDEX IF NOT EXISTS idx_feedback_session_state ON feedback_cases(session_id,state,updated_at);
+CREATE INDEX IF NOT EXISTS idx_feedback_author ON feedback_cases(author_id,updated_at);
+CREATE TABLE IF NOT EXISTS feedback_messages (
+    id INTEGER PRIMARY KEY,
+    case_id INTEGER NOT NULL REFERENCES feedback_cases(id),
+    actor_id INTEGER NOT NULL REFERENCES users(id),
+    actor_role TEXT NOT NULL,
+    visibility TEXT NOT NULL CHECK(visibility IN ('SHARED','STAFF')),
+    content TEXT NOT NULL,
+    version INTEGER NOT NULL DEFAULT 1,
+    deleted INTEGER NOT NULL DEFAULT 0 CHECK(deleted IN (0,1)),
+    created_at TEXT NOT NULL,
+    updated_at TEXT NOT NULL
+);
+CREATE INDEX IF NOT EXISTS idx_feedback_messages_case ON feedback_messages(case_id,id);
+CREATE TABLE IF NOT EXISTS feedback_events (
+    id INTEGER PRIMARY KEY,
+    case_id INTEGER NOT NULL REFERENCES feedback_cases(id),
+    actor_id INTEGER REFERENCES users(id),
+    actor_role TEXT NOT NULL,
+    code TEXT NOT NULL,
+    from_state TEXT,
+    to_state TEXT,
+    detail TEXT NOT NULL DEFAULT '',
+    visibility TEXT NOT NULL DEFAULT 'SHARED' CHECK(visibility IN ('SHARED','STAFF')),
+    created_at TEXT NOT NULL
+);
+CREATE INDEX IF NOT EXISTS idx_feedback_events_case ON feedback_events(case_id,id);
+CREATE TABLE IF NOT EXISTS feedback_commands (
+    actor_id INTEGER NOT NULL REFERENCES users(id),
+    request_id TEXT NOT NULL,
+    operation TEXT NOT NULL,
+    payload_hash TEXT NOT NULL,
+    result TEXT NOT NULL,
+    created_at TEXT NOT NULL,
+    PRIMARY KEY(actor_id,request_id)
+);
+CREATE TABLE IF NOT EXISTS feedback_reviews (
+    id INTEGER PRIMARY KEY,
+    case_id INTEGER NOT NULL REFERENCES feedback_cases(id),
+    prompt TEXT NOT NULL,
+    state TEXT NOT NULL DEFAULT 'OPEN' CHECK(state IN ('OPEN','ANSWERED','CANCELLED')),
+    due_at TEXT NOT NULL,
+    opened_by INTEGER NOT NULL REFERENCES users(id),
+    version INTEGER NOT NULL DEFAULT 1,
+    created_at TEXT NOT NULL,
+    closed_at TEXT
+);
+CREATE UNIQUE INDEX IF NOT EXISTS idx_feedback_single_open_review ON feedback_reviews(case_id) WHERE state='OPEN';
+CREATE INDEX IF NOT EXISTS idx_feedback_review_due ON feedback_reviews(state,due_at,id);
+CREATE TABLE IF NOT EXISTS feedback_review_reminders (
+    review_id INTEGER PRIMARY KEY REFERENCES feedback_reviews(id) ON DELETE CASCADE,
+    last_reminded_at TEXT NOT NULL,
+    reminder_count INTEGER NOT NULL CHECK(reminder_count >= 1)
+);
+CREATE TABLE IF NOT EXISTS feedback_review_answers (
+    id INTEGER PRIMARY KEY,
+    review_id INTEGER NOT NULL UNIQUE REFERENCES feedback_reviews(id),
+    outcome TEXT NOT NULL CHECK(outcome IN ('HELPED','PARTLY','UNCHANGED')),
+    emotion TEXT,
+    content TEXT NOT NULL,
+    created_at TEXT NOT NULL
+);
+CREATE TABLE IF NOT EXISTS feedback_groups (
+    id INTEGER PRIMARY KEY,
+    session_id INTEGER NOT NULL REFERENCES class_sessions(id),
+    title TEXT NOT NULL,
+    description TEXT NOT NULL,
+    version INTEGER NOT NULL DEFAULT 1,
+    archived INTEGER NOT NULL DEFAULT 0 CHECK(archived IN (0,1)),
+    created_by INTEGER NOT NULL REFERENCES users(id),
+    created_at TEXT NOT NULL,
+    updated_at TEXT NOT NULL
+);
+CREATE TABLE IF NOT EXISTS feedback_group_members (
+    group_id INTEGER NOT NULL REFERENCES feedback_groups(id),
+    case_id INTEGER NOT NULL REFERENCES feedback_cases(id),
+    PRIMARY KEY(group_id,case_id)
+);
+CREATE TABLE IF NOT EXISTS feedback_templates (
+    id INTEGER PRIMARY KEY,
+    owner_id INTEGER NOT NULL REFERENCES users(id),
+    title TEXT NOT NULL,
+    content TEXT NOT NULL,
+    reason TEXT,
+    version INTEGER NOT NULL DEFAULT 1,
+    archived INTEGER NOT NULL DEFAULT 0 CHECK(archived IN (0,1)),
+    uses INTEGER NOT NULL DEFAULT 0,
+    created_at TEXT NOT NULL,
+    updated_at TEXT NOT NULL
+);
+CREATE TABLE IF NOT EXISTS feedback_policies (
+    course_id INTEGER PRIMARY KEY REFERENCES courses(id),
+    response_hours INTEGER NOT NULL,
+    review_days INTEGER NOT NULL,
+    submit_grace_hours INTEGER NOT NULL,
+    daily_case_limit INTEGER NOT NULL,
+    reopen_days INTEGER NOT NULL,
+    version INTEGER NOT NULL DEFAULT 1,
+    updated_at TEXT NOT NULL
+);
+CREATE TABLE IF NOT EXISTS feedback_watches (
+    user_id INTEGER NOT NULL REFERENCES users(id),
+    case_id INTEGER NOT NULL REFERENCES feedback_cases(id),
+    created_at TEXT NOT NULL,
+    PRIMARY KEY(user_id,case_id)
+);
+CREATE TABLE IF NOT EXISTS feedback_adjustments (
+    case_id INTEGER NOT NULL REFERENCES feedback_cases(id),
+    adjustment_id INTEGER NOT NULL REFERENCES emotion_insight_entries(id) ON DELETE CASCADE,
+    public_summary TEXT NOT NULL,
+    created_at TEXT NOT NULL,
+    PRIMARY KEY(case_id,adjustment_id)
+);
+CREATE TABLE IF NOT EXISTS feedback_inbox (
+    id INTEGER PRIMARY KEY,
+    user_id INTEGER NOT NULL REFERENCES users(id),
+    case_id INTEGER NOT NULL REFERENCES feedback_cases(id),
+    event_key TEXT NOT NULL,
+    code TEXT NOT NULL,
+    title TEXT NOT NULL,
+    created_at TEXT NOT NULL,
+    read_at TEXT,
+    UNIQUE(user_id,event_key)
+);
+CREATE INDEX IF NOT EXISTS idx_feedback_inbox_owner ON feedback_inbox(user_id,read_at,id);
+CREATE TABLE IF NOT EXISTS feedback_saved_views (
+    id INTEGER PRIMARY KEY,
+    owner_id INTEGER NOT NULL REFERENCES users(id),
+    title TEXT NOT NULL,
+    filters TEXT NOT NULL,
+    version INTEGER NOT NULL DEFAULT 1,
+    created_at TEXT NOT NULL,
+    updated_at TEXT NOT NULL
+);

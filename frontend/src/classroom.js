@@ -233,6 +233,20 @@ export const ClassroomPanel = {
         student && view.value === 'guide' ? learningGuide() : null,
         student && Date.parse(current.value.ends_at) > clock.value ? h('button', { class: 'quiet-button classroom-leave-link', onClick: () => emit('navigate', { tab: 'leaves', sessionId: current.value.id, courseId: current.value.course_id }) }, '本节课申请请假') : null,
         h('button', { class: 'secondary-button', disabled: hasDraft.value, onClick: () => { if (mayLeave()) emit('navigate', { tab: 'evaluations', sessionId: current.value.id, courseId: current.value.course_id }); } }, student ? '填写完整课程评价' : '查看多项评分与匿名建议'),
+        (student || view.value === 'overview') && h('button', {
+          type: 'button',
+          class: 'secondary-button',
+          disabled: hasDraft.value,
+          onClick: () => {
+            if (!mayLeave()) return;
+            emit('navigate', {
+              tab: 'feedback',
+              sessionId: current.value.id,
+              courseId: current.value.course_id,
+              view: student ? 'compose' : 'queue',
+            });
+          },
+        }, student ? '告诉老师影响情绪的原因' : '处理本节课堂的情绪反馈'),
         student ? studentFeedback() : view.value === 'overview' ? statistics() : null,
         !student && view.value === 'overview' ? h('div', { class: 'guide-actions' }, [h('button', { class: 'secondary-button', onClick: () => emit('navigate', { tab: 'dashboard', sessionId: Number(selected.value), courseId: current.value.course_id }) }, '打开本节实时看板'), h('button', { class: 'quiet-button', onClick: () => emit('navigate', { tab: 'reports', courseId: current.value.course_id }) }, '查看课程统计')]) : null,
         !student && view.value === 'overview' ? h(CameraPanel, { key: `${selected.value}:${current.value.status}`, sessionId: Number(selected.value), ongoing: current.value.status === 'ONGOING', onExpired: () => emit('expired'), onSaved: refreshAiFeedback }) : null,

@@ -27,6 +27,7 @@ from backend.app.emotion.replay.controller import router as replay_router
 from backend.app.emotion.insights.controller import router as insights_router
 from backend.app.emotion.lab.controller import router as lab_router
 from backend.app.emotion.lab import runtime as lab_runtime
+from backend.app.emotion.feedback.controller import router as feedback_router
 from backend.app.errors import AppError, app_error_handler, validation_error_handler, http_error_handler
 from backend.app.repositories.database import PROJECT_ROOT, initialize_database
 
@@ -67,6 +68,7 @@ app.include_router(ai_queue_router)
 app.include_router(replay_router)
 app.include_router(insights_router)
 app.include_router(lab_router)
+app.include_router(feedback_router)
 app.add_exception_handler(AppError, app_error_handler)
 app.add_exception_handler(RequestValidationError, validation_error_handler)
 app.add_exception_handler(HTTPException, http_error_handler)
