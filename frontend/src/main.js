@@ -17,5 +17,6 @@ import './leaves.css';
 import './extensions.css';
 import './emotion/replay.css';
 import './emotion/insights.css';
+import './emotion/feedback/feedback.css';
 
 createApp(App).mount('#app');
