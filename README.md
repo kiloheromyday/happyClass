@@ -42,29 +42,62 @@
 
 | 身份 | 主要功能 | 图文入口 |
 | --- | --- | --- |
-| 学生 | 课程与周课表、加入课程、表情反馈、四项评价、匿名提问、学习指引 | [课程与课堂](docs/manual/README.md#scene-04) |
+| 学生 | 课程与周课表、加入课程、表情反馈、四项评价、匿名提问、学习指引、提交情绪反馈、填写回访 | [课程与课堂](docs/manual/README.md#scene-04) · [提交反馈](docs/emotion/guide/submit-feedback.md) · [填写回访](docs/emotion/guide/review-feedback.md) |
 | 学生个人空间 | 私人笔记、查询与 CSV 导出、日期回顾、资料与头像裁剪、好友学伴、留言墙、请假、站内消息 | [笔记与回顾](docs/manual/README.md#scene-11) · [学伴与留言](docs/manual/README.md#scene-16) |
-| 教师 | 课堂安排、课程邀请、问题回应、指引草稿与发布、请假审批、实时看板、统计导出、评价汇总、教学反思 | [教师完整流程](docs/manual/README.md#teacher) |
+| 教师 | 课堂安排、课程邀请、问题回应、指引草稿与发布、请假审批、实时看板、统计导出、评价汇总、教学反思、追问反馈、批量回应、发起回访 | [教师完整流程](docs/manual/README.md#teacher) · [处理反馈](docs/emotion/guide/ask-student.md) · [分组与批量回应](docs/emotion/guide/batch-feedback.md) |
 | 管理员 | 全校开课与评价、院系配色、课程归档恢复、教师分配、账号创建、课堂名单、演示数据筛选 | [管理员完整流程](docs/manual/README.md#admin) |
 | 通用 | 登录与账号安全、角色权限、消息已读与跳转、本地演示身份切换 | [首次使用](docs/manual/README.md#common) |
+| 教师和管理员 | 情绪回放、教学调整前后对比、课堂反馈隐私 | [情绪回放](docs/emotion/guide/replay-emotion.md) · [情绪洞察](docs/emotion/guide/teaching-insights.md) · [反馈隐私](docs/emotion/guide/feedback-privacy.md) |
 
 加入码只在添加课程时使用；个人笔记和回顾由本人查看；好友学伴是普通学生之间的关系。表情反馈条数、参与人数和四项评分份数分别统计。
 
-## 情绪反馈处理中心
+### 学生：写下哪里没跟上
 
-如果例题第二步没跟上，学生可以写清楚卡在哪。老师可以追问，也可以在讲解之后发回访，问问学生现在能不能跟上。
+从侧栏打开「情绪反馈处理中心」，选一节课、选表情，再写遇到的问题。比如例题第二步没跟上，可以告诉老师具体卡在哪。
 
-学生和老师都从左侧进「情绪反馈处理中心」。学生点「提交新反馈」，选一节课、选表情，再写遇到的问题。老师能看到内容，页面会隐藏账号，正文里也尽量别写姓名或学号。
+![学生端的反馈中心入口，蓝框标出侧栏入口和提交按钮](docs/emotion/images/01-feedback-entry.png)
 
-老师从「待办」打开反馈，可以确认、追问或回复。同一节课有几条相似的反馈，可以在「集中处理」里一起回。学生在回访中选「已改善」会结案，选「部分改善」或「仍未改善」会回到处理中。逾期了可以在「回访日程」发提醒。
+[查看提交步骤](docs/emotion/guide/submit-feedback.md)
 
-「处理统计」能按课筛选，反馈列表可以导出 CSV。老师在「情绪洞察」记过教学调整的话，可以把它关联到反馈，之后一起看学生的答复。
+### 教师：追问、回复和回访
 
-更新代码后按下文重新启动，SQLite 会补建新表。下面的命令可以在项目根目录单跑反馈中心的接口测试。
+老师从「待办」打开反馈。想问清楚时，点「请学生补充」。处理后可以发回访，学生确认改善后，这条反馈会结案。
 
-```powershell
-.\.venv\Scripts\python.exe -m pytest -q tests/test_emotion_feedback_center.py
-```
+![教师的反馈处理页，蓝框标出追问入口、说明和确认按钮](docs/emotion/images/04-teacher-asks.png)
+
+[查看教师处理](docs/emotion/guide/ask-student.md) · [查看回访和结案](docs/emotion/guide/review-feedback.md)
+
+### 教师：一起回复相似反馈
+
+同一节课有几条类似反馈，可以先核对内容、勾选建组，再写一条共同回复。每位学生在自己的反馈里收到回应。
+
+![批量回应预览，蓝框标出发给学生的内容和确认按钮](docs/emotion/images/09-batch-reply.png)
+
+[查看分组和批量回应](docs/emotion/guide/batch-feedback.md)
+
+### 情绪回放：拖到想看的课堂时段
+
+教师和管理员可以拖时间轴、点柱子或直接播放，查看某一段有几条反馈、哪类表情最多。
+
+![情绪回放页面，蓝框标出时段统计、播放按钮和时间轴](docs/emotion/images/10-replay.png)
+
+[查看回放操作](docs/emotion/guide/replay-emotion.md)
+
+### 情绪洞察：记下补讲，再看前后的反馈
+
+记录某个时间点做了什么调整，例如补讲一道题。保存后，页面会分别显示手动反馈和 AI 记录在调整前后的统计。
+
+![补讲记录和前后对比，蓝框标出调整标题和两种来源的统计](docs/emotion/images/11-insights.png)
+
+[查看教学调整和前后对比](docs/emotion/guide/teaching-insights.md)
+
+### 反馈隐私：按课堂设置展示范围
+
+任课老师或管理员可以为一节课选「匿名展示」或「仅聚合展示」。学生仍能在自己的历史里查看反馈。
+
+![反馈隐私设置，蓝框标出选课堂、选模式和保存按钮](docs/emotion/images/12-privacy.png)
+
+[查看隐私设置步骤](docs/emotion/guide/feedback-privacy.md)
 
 ## 本地启动
 
