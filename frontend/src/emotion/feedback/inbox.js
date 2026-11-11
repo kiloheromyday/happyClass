@@ -76,7 +76,7 @@ export const FeedbackInbox = {
         listing.loading.value && notice('正在读取通知…', 'info'),
         entries.value.length
           ? h('ul', { class: 'ef-list' }, entries.value.map(card))
-          : !listing.loading.value && empty(unreadOnly.value ? '未读通知已清空' : '暂无反馈通知'),
+          : !listing.loading.value && empty(unreadOnly.value ? '没有未读通知' : '还没有反馈通知'),
         page?.has_more && button('加载更多通知', () => load(page.next_before_id), { disabled: listing.loading.value }),
       ], actions(
         badge((page?.unread_count ?? 0) + ' 条未读'),

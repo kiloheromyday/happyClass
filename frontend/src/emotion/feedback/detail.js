@@ -153,7 +153,7 @@ const FeedbackManagement = {
     }
 
     return () => section('内部处理信息', [
-      h('p', { class: 'ef-meta' }, '优先级和标签仅对有权限处理本条反馈的教师和管理员可见。'),
+      h('p', { class: 'ef-meta' }, '优先级和标签只给能处理这条反馈的老师和管理员看。'),
       notice(error.value || command.error.value),
       saved.value && notice('已保存内部处理信息。', 'good'),
       command.conflict.value && button('刷新反馈并查看最新值', () => emit('refresh')),
@@ -338,7 +338,7 @@ export const FeedbackDetail = {
             ['当时记录的情绪', emotion(props.catalog, current.linked_emotion_record.emotion)],
             ['记录时间', date(current.linked_emotion_record.recorded_at)],
           ]),
-          h('p', { class: 'ef-meta' }, '此记录仅在你的账户中展示。老师可以看到你在反馈里选择的情绪。'),
+          h('p', { class: 'ef-meta' }, '只有你能看到这条历史记录。老师能看到的是你提交时选的表情。'),
         ], button('查看我的情绪历史', () => emit('navigate', {
           tab: 'history',
           sessionId: current.session_id,

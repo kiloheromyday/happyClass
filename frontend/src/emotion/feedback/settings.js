@@ -10,13 +10,13 @@ const policyFields = [
     key: 'response_hours',
     label: '确认反馈的目标时限（小时）',
     min: 1, max: 168,
-    hint: '超过时限且尚未确认时，教师待办会提示逾期。',
+    hint: '到点还没确认，老师的待办会标成逾期。',
   },
   {
     key: 'review_days',
     label: '回访默认答复时间（天）',
     min: 1, max: 14,
-    hint: '老师发起回访时可以为本轮单独设置。',
+    hint: '每次发回访时，老师也可以单独改天数。',
   },
   {
     key: 'submit_grace_hours',
@@ -199,7 +199,7 @@ const TemplateEditor = {
       field('适用原因（可选）', select(values.reason, [all('通用'), ...props.catalog.reasons], value => { values.reason = value; })),
       field('回应文本', textarea(values.content, value => { values.content = value; }, {
         required: true, minlength: 2, maxlength: 2000,
-        placeholder: '例如：谢谢你指出这个环节。我会在下一节课开始时用一道例题重新讲解。',
+        placeholder: '比如：谢谢你告诉我。下节课开头我再讲一道例题。',
       }), '填写模板后，可以在单条反馈的交流区载入并修改文本。'),
       props.item && check('归档此模板', values.archived, value => { values.archived = value; }),
       notice(validation.value || command.error.value),

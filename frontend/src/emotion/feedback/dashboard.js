@@ -59,7 +59,7 @@ export const FeedbackTodos = {
             const tab = key === 'review' ? 'reviews' : key === 'reply' ? 'conversation' : 'workflow';
             emit('open', id, tab);
           })
-          : empty('这类待办已清空'),
+          : empty('这里没有待办'),
         value.count > value.items.length && h('p', { class: 'ef-meta' },
           '这里显示最早的 ' + value.items.length + ' 条，列表中可查看对应范围。',
         ),
@@ -267,7 +267,7 @@ export const FeedbackReports = {
           ['老师说明后关闭', data.staff_closed],
           ['学生撤回', data.withdrawn],
         ])),
-        h('p', { class: 'ef-meta' }, '答复率以未取消的回访轮次为分母。改善比例以已答复的回访轮次为分母。'),
+        h('p', { class: 'ef-meta' }, '算答复率时不计取消的回访。改善比例只看已答复的回访。'),
       ];
     }
 

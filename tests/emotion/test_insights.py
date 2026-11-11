@@ -155,7 +155,7 @@ def test_phase_links_export_escaping_no_data_and_long_session_bounds(actors,monk
     assert response.status_code==200 and response.headers['content-type'].startswith('text/csv')
     text=response.content.decode('utf-8-sig')
     assert "'=HYPERLINK" in text and "'+unsafe" in text and 'secret-device' not in text
-    assert '不证明教学措施导致变化' in text
+    assert '单靠这组数判断不了是不是调整起了作用' in text
     with connect() as db:
         db.execute('UPDATE class_sessions SET starts_at=? WHERE id=?',(utc_text(START-timedelta(days=40)),session['id']))
     assert len(client.get(url).json()['data']['frames'])<=360

@@ -35,13 +35,13 @@ const settle = async () => { for (let i = 0; i < 5; i++) { await new Promise(set
     await upload();
     assert(text(root).includes('平静 · 模型分数 99.0%'));
     assert(text(root).includes('已保存到课堂统计'));
-    assert(text(root).includes('模型分数不是识别准确率'));
+    assert(text(root).includes('不能当成准确率'));
     assert.equal(saves, 1);
     result = {detected: 0, processed: 0, saved: 0, filtered: 0, predictions: []};
     await upload();
     assert(text(root).includes('本次未检测到人脸'));
     assert(!text(root).includes('本次模型判断'));
-    assert(text(root).includes('当前模型没有“疑惑”类别'));
+    assert(text(root).includes('暂时没有「疑惑」'));
     console.log('Camera feedback checks passed: low-score candidates remain visible without being counted, saved scores, unsupported confusion category and no-face state.');
   } finally { app?.unmount(); global.fetch = originalFetch; global.document = originalDocument; }
 })().catch(error => { console.error(error); process.exitCode = 1; });

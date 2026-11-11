@@ -78,7 +78,7 @@ export const FeedbackReviews = {
         return [
           field('给学生的回访问题', textarea(values.prompt, value => { values.prompt = value; }, {
             required: true, minlength: 2, maxlength: 1000,
-            placeholder: '例如：增加例题后，你现在能完成这一类题吗？',
+            placeholder: '比如：看了新例题，这类题现在会做了吗？',
           })),
           field('希望几天内收到回复', number(values.due_days, value => { values.due_days = value; }, {
             required: true, min: 1, max: 14,
@@ -93,8 +93,8 @@ export const FeedbackReviews = {
           field('现在的情绪（可选）', select(values.emotion, [all('不选择'), ...props.catalog.emotions],
             value => { values.emotion = value; })),
           field('想补充什么？', textarea(values.content, value => { values.content = value; }, { maxlength: 1500 })),
-          values.outcome === 'HELPED' && notice('选择已改善后，系统会以“学生确认改善”结案。', 'info'),
-          ['PARTLY', 'UNCHANGED'].includes(values.outcome) && notice('老师会收到你的回应，反馈将继续处理。', 'info'),
+          values.outcome === 'HELPED' && notice('选「已改善」后，这条反馈会结案。', 'info'),
+          ['PARTLY', 'UNCHANGED'].includes(values.outcome) && notice('老师会收到回复，继续跟进这条反馈。', 'info'),
         ];
       }
       return field('取消说明（可选）', textarea(values.content, value => { values.content = value; }, {

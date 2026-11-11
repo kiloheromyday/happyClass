@@ -147,7 +147,7 @@ def phase_alignment(sessions, settings):
         })
     return {
         'mode': 'PHASE',
-        'description': '按相同环节名称对齐，忽略两端空白和英文字母大小写；不自动推断语义相近的环节。',
+        'description': '按环节名称对齐。首尾空格和英文字母大小写可以不同。',
         'columns': columns,
         'rows': matrix,
     }

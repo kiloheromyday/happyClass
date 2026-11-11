@@ -69,7 +69,7 @@ DEFAULT_POLICY = {
 
 def require_version(item, value):
     if item['version'] != value:
-        raise AppError(409, 'VERSION_CONFLICT', '内容已被更新，请刷新后核对；当前草稿不会自动丢弃')
+        raise AppError(409, 'VERSION_CONFLICT', '这条内容已经更新。刷新核对一下，草稿会保留')
 
 
 def next_state(item, action, user, policy, content):

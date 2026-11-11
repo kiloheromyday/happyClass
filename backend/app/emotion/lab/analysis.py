@@ -157,22 +157,22 @@ def build_result(definition, user, cutoff, checkpoint=lambda progress, message: 
         'methodology': methodology(),
     }
     result['findings'] = findings(result)
-    checkpoint(94, '正在冻结报告快照')
+    checkpoint(94, '正在保存报告')
     result['fingerprint'] = hashlib.sha256(repo.encode(result).encode()).hexdigest()
     return result
 
 
 def methodology():
     return {
-        'unit': '反馈记录次数，不代表学生人数',
+        'unit': '按反馈条数统计',
         'sources': '学生主动反馈与 AI 分类分别分析，采样对象和频率可能不同',
         'concern_classes': ['SAD', 'ANGRY', 'FEAR', 'DISGUST'],
-        'equal_weight': '仅纳入达到最小样本的课堂，各课堂关注占比按相同权重求均值',
+        'equal_weight': '只用记录数够多的课堂，各课占比取平均',
         'pooled_weight': '将记录相加后计算占比，采样量大的课堂权重更高',
         'distribution_distance': '总变差和 Jensen–Shannon 分歧描述分布差异，不是模型准确率',
-        'temporal_window': '时间区间左闭右开，结束边界上的记录不属于前一个区间',
+        'temporal_window': '记录落在分界点时，算进后一个时段',
         'uncertainty': '没有对学生去重或随机抽样，不输出显著性检验、因果结论或心理诊断',
-        'reproducibility': '冻结聚合查询结果、方案版本、引擎版本与快照指纹；不修改原始反馈',
+        'reproducibility': '保存当时的汇总结果、方案版本和校验指纹，方便回查',
     }
 
 

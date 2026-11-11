@@ -169,7 +169,7 @@ def export_report(session_id, user, source, data_scope, comparison_minutes):
         writer.writerow([safe_csv_cell(cell) for cell in cells])
     row('课堂情绪洞察报告',data['session']['course_name'],data['session']['class_name'])
     row('快照时间',data['updated_at'],'来源',source,'数据范围',data_scope)
-    row('统计单位','反馈记录次数；不代表人数。前后变化为描述性对比，不证明教学措施导致变化。')
+    row('统计单位','按反馈条数统计。前后两段的占比可以一起看，单靠这组数判断不了是不是调整起了作用。')
     row('关注类别','低落、生气、担忧、反感；AI 与主动反馈分开分析')
     row('规则',f"每段 {data['window']['bucket_minutes']} 分钟",f"至少 {data['rules']['min_records']} 条",f"关注占比 {data['rules']['concern_ratio']:.0%}",f"连续 {data['rules']['consecutive_windows']} 段")
     row('记录总数',data['summary']['total'],'合成演示记录',data['summary']['demo_count'])

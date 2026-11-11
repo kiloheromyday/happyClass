@@ -105,5 +105,5 @@ if __name__ == '__main__':
     parser.add_argument('--confirm-demo-data', action='store_true')
     args = parser.parse_args()
     if not args.confirm_demo_data:
-        parser.error('请显式添加 --confirm-demo-data，命令会新增独立合成演示数据')
+        parser.error('这条命令会往当前库里添加演示数据。确认后加上 --confirm-demo-data')
     print(seed(args.teacher))

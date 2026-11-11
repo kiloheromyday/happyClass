@@ -75,7 +75,7 @@ export const ReplayPanel = {
       error.value ? h('p',{class:'form-notice',role:'alert'},error.value) : null,
       loading.value ? h('div',{class:'replay-loading',role:'status'},[h('span',{class:'loading-ring'}),'正在整理这节课的情绪片段…']) : null,
       data.value && current.value ? h('div',{class:'replay-experience'},[
-        h('div',{class:'replay-overview'},[h('span',[h('strong',String(data.value.summary.total)),' 条反馈记录']),h('span',`手动 ${data.value.summary.manual_count} · AI ${data.value.summary.ai_count}`),h('span',{class:'replay-snapshot'},`数据快照 ${clock(data.value.updated_at)} · 北京时间`)]),
+        h('div',{class:'replay-overview'},[h('span',[h('strong',String(data.value.summary.total)),' 条反馈记录']),h('span',`手动 ${data.value.summary.manual_count} · AI ${data.value.summary.ai_count}`),h('span',{class:'replay-snapshot'},`更新于 ${clock(data.value.updated_at)} · 北京时间`)]),
         data.value.demo_record_count ? h('p',{class:'replay-demo-note'},`含 ${data.value.demo_record_count} 条合成演示记录，用于体验回放效果，不是实际情绪识别结果。`) : null,
         h('div',{class:['replay-stage',{'is-playing':playing.value,'has-records':current.value.total>0}]},[
           h('div',{class:'replay-stage-orbit','aria-hidden':'true'}),h('span',{class:'replay-stage-star star-one','aria-hidden':'true'},'✧'),h('span',{class:'replay-stage-star star-two','aria-hidden':'true'},'✦'),
@@ -84,7 +84,7 @@ export const ReplayPanel = {
             const count = current.value.emotions.find(item=>item.emotion===code)?.count || 0;
             return h('div',{class:['replay-character',{'is-dominant':dominant.value.includes(code),'is-quiet':!count}],style:{'--mood-color':color,'--mood-delay':`${i*.14}s`},key:code},[h('span',{class:'replay-count'},count?`${count} 条`:'—'),h('div',{class:'replay-mascot'},moodFace(code,96)),h('strong',name),h('span',{class:'replay-character-shadow','aria-hidden':'true'})]);
           })),
-          h('p',{class:'replay-stage-caption',role:'status'},!data.value.has_started?'这节课还没有开始。':!current.value.total?'这一小段还没有反馈记录，不代表大家都是平静。':`本时段最多：${dominant.value.map(label).join('、')}${dominant.value.length>1?'（并列）':''} · 共 ${current.value.total} 条记录`),
+          h('p',{class:'replay-stage-caption',role:'status'},!data.value.has_started?'这节课还没有开始。':!current.value.total?'这段时间还没有反馈。':`本时段最多：${dominant.value.map(label).join('、')}${dominant.value.length>1?'（并列）':''} · 共 ${current.value.total} 条记录`),
         ]),
         h('section',{class:'replay-player','aria-label':'情绪时间轴播放器'},[
           h('div',{class:'replay-transport'},[
@@ -99,7 +99,7 @@ export const ReplayPanel = {
           h('p',{class:'replay-player-hint'},`拖动滑块，或点击上方的小柱子跳转。1× 每秒推进一个时段，每段 ${data.value.bucket_minutes} 分钟。`),
         ]),
         h('div',{class:'replay-moment-stats'},[h('div',[h('span','当前时段'),h('strong',`${current.value.total} 条`)]),h('div',[h('span','学生主动反馈'),h('strong',`${current.value.manual_count} 条`)]),h('div',[h('span','AI 识别记录'),h('strong',`${current.value.ai_count} 条`)])]),
-        h('p',{class:'replay-boundary-note'},`回放的是情绪分类统计，不是课堂录像。卡通角色不对应任何学生；按记录次数统计，不代表人数。${data.value.includes_after_class?'包含下课后 30 分钟反馈窗口内的已有记录。':''}${data.value.bucket_minutes!==data.value.requested_bucket_minutes?'课堂时长较长，已自动合并时段以保证流畅。':''}`),
+        h('p',{class:'replay-boundary-note'},`按表情记录的条数回放。画面里的卡通角色不对应学生。${data.value.includes_after_class?'包含下课后 30 分钟反馈窗口内的已有记录。':''}${data.value.bucket_minutes!==data.value.requested_bucket_minutes?'这节课较长，时间轴用了更宽的时段。':''}`),
         h('button',{type:'button',class:'quiet-button',onClick:()=>emit('navigate',{tab:'classroom',sessionId:Number(selected.value),courseId:data.value.session.course_id})},['打开对应课堂',icon('arrow',15)]),
         h('button',{type:'button',class:'secondary-button',onClick:()=>emit('navigate',{tab:'insights',sessionId:Number(selected.value)})},['查看课堂情绪洞察',icon('chart',15)]),
       ]) : !loading.value && !error.value ? h('div',{class:'empty-state'},[icon('history',30),h('h3','选择一节课，开启情绪小剧场'),h('p','有权限访问的课堂会出现在上方列表中。')]) : null,

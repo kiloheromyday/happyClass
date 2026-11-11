@@ -4,7 +4,7 @@
 
 面向三人组课程大作业的课堂反馈系统。学生选择已加入课程中的具体课堂，提交感受和完整评价；教师回应问题、发布学习指引、审批请假并查看统计；管理员维护全校开课、院系、课程和账号。
 
-**选做扩展版本：0.22.0；原交接版本：0.21.1；图文手册及界面完善日期：2026-11-09。** 系统版本以 `backend/app/main.py` 的 API 版本为准。已完成三角色真实浏览器操作及截图手册，见 [功能使用说明](manual/README.md)。物理摄像头实时采集和另一台电脑的部署验收仍待完成，不能视为已经通过生产部署验收。
+**选做扩展为 0.22.0，原交接版本为 0.21.1。图文手册及界面完善日期：2026-11-09。** 系统版本以 `backend/app/main.py` 的 API 版本为准。已完成三角色真实浏览器操作及截图手册，见 [功能使用说明](manual/README.md)。物理摄像头实时采集和另一台电脑的部署验收仍待完成，不能视为已经通过生产部署验收。
 
 本文是详细安装与交接入口：先完成本地启动，再按角色体验业务，最后核对待办与分工。
 
@@ -16,7 +16,7 @@
 | 主服务 | Python、FastAPI、Uvicorn | Python 3.13；已验证 Python 3.13.12 |
 | 数据库 | SQLite、SQL 初始化脚本 | 无需另装数据库服务；默认 `data/classroom.db` |
 | 可选 AI | OpenCV、ONNX Runtime、FER+ | CPU 可运行；首次下载约 35 MB 模型 |
-| 已验证运行方式 | Windows 本机 PowerShell、Docker Desktop 的 Linux 容器 | 另一台电脑与公网部署尚未复现验收；Compose 入口见 [选做扩展](OPTIONAL_EXTENSIONS.md) |
+| 已验证运行方式 | Windows 本机 PowerShell、Docker Desktop 的 Linux 容器 | Compose 启动命令见[选做扩展](OPTIONAL_EXTENSIONS.md)。另一台电脑和公网环境尚未复验 |
 
 后端按 Controller → Service → Repository 分层。SQLite 是当前实际实现，**未适配 MySQL/PostgreSQL**。参考指导书将这两者列为建议技术栈；若授课教师另有硬性要求，应另行确认，详见 [数据库要求核对](DATABASE_REQUIREMENTS.md)。
 
@@ -191,7 +191,7 @@ Python 测试使用隔离数据库，不要改为指向现有业务数据库。A
 3. 按 [真实截图使用说明](manual/README.md) 复现三角色流程；最新版为 49 页、35 个场景、56 幅配图，已标注实际入口及操作结果。更换界面或业务规则后同步更新对应截图。
 4. 在另一台电脑按本文复现，补姓名、组号、真实贡献和教师要求，冻结版本后录视频。
 
-排课冲突检测不在当前需求中。MySQL/PostgreSQL 适配、公网部署、邮件或短信通知尚未实现，不能在报告中写成现成功能。Docker Compose 已完成本机运行验证，GitHub Actions 已在小组仓库通过[扩展分支检查](https://github.com/kiloheromyday/happyClass/actions/runs/42764849798)。安装、故障恢复及限制见 [选做扩展](OPTIONAL_EXTENSIONS.md)，详细分工见 [TEAM_HANDOFF](TEAM_HANDOFF.md)。
+排课冲突检测不在当前需求中。MySQL/PostgreSQL 适配、公网部署、邮件或短信通知尚未实现，不能在报告中写成现成功能。Docker Compose 已在本机跑通，主分支也通过了[自动测试和容器检查](https://github.com/kiloheromyday/happyClass/actions/runs/43003503852)。启动和重试命令见[选做扩展](OPTIONAL_EXTENSIONS.md)。详细分工见 [TEAM_HANDOFF](TEAM_HANDOFF.md)。
 
 ## 9. 数据与交付约定
 

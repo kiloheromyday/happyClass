@@ -163,7 +163,7 @@ export const FeedbackReviewDesk = {
         page && h('p', { class: 'ef-meta' }, '共 ' + page.total + ' 轮 · 更新于 ' + date(page.generated_at)),
         page?.items.length > 0
           ? display.value === 'schedule' ? calendar() : grid(page.items)
-          : !resource.loading.value && empty('没有符合条件的回访', '可调整范围或查看其他状态。'),
+          : !resource.loading.value && empty('没有符合条件的回访', '可以换个课堂或状态再查。'),
         pager(page, resource.loading.value || command.busy.value, load),
       ], actions(
         button('按截止日查看', () => { display.value = 'schedule'; }, { 'aria-pressed': display.value === 'schedule' }),
