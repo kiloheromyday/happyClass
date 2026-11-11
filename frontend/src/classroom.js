@@ -208,7 +208,7 @@ export const ClassroomPanel = {
     }
     function studentFeedback() {
       return h('section', { class: 'student-feedback' }, [h('h3', current.value.status === 'ENDED' && canEvaluate(current.value) ? '回想刚才的课堂，你感觉如何？' : '此刻，你感觉如何？'), h('p', { class: 'muted' }, canEvaluate(current.value) ? current.value.status === 'ENDED' ? `课后评价开放至 ${dateText(current.value.feedback_closes_at)}。` : '不用想太多，选择最贴近自己的感受。' : current.value.status === 'UPCOMING' ? '课堂尚未开始。' : '本次评价已结束，可以回顾历史记录。'),
-        h('p', { class: 'data-note' }, current.value.privacy_mode === 'AGGREGATE' ? '本节仅向教师展示聚合统计；你仍可查看自己的反馈历史。' : current.value.privacy_mode === 'ANONYMOUS' ? '本节向教师匿名展示表情反馈；后台仍保存本人归属供个人回顾。' : '本节采用标准模式，任课教师可查看反馈账号。可在“反馈隐私”了解展示规则。'),
+        h('p', { class: 'data-note' }, current.value.privacy_mode === 'AGGREGATE' ? '这节课老师只能看到统计，你还可以看自己的记录。' : current.value.privacy_mode === 'ANONYMOUS' ? '老师看到的表情反馈会隐藏账号，你仍能查到自己的记录。' : '这节课用标准模式，老师能看到反馈账号。详情见「反馈隐私」。'),
         h('div', { class: 'emoji-picker', role: 'group', 'aria-label': '选择此刻的感受' }, emotions.map(([code, , label]) => h('button', { class: { chosen: selectedEmotion.value === code }, 'data-emotion': code, type: 'button', disabled: locked.value || !canEvaluate(current.value), 'aria-pressed': selectedEmotion.value === code, onClick: () => { selectedEmotion.value = code; retry.value = null; message.value = ''; } }, [moodFace(code), h('span', label), h('span', { class: 'emotion-selected-dot', 'aria-hidden': 'true' })]))),
         h('button', { class: 'primary-button submit-emotion', disabled: locked.value || !selectedEmotion.value || !canEvaluate(current.value), onClick: sendEmotion }, saving.value ? '正在记录…' : '提交本次感受'),
       ]);
@@ -246,7 +246,7 @@ export const ClassroomPanel = {
               view: student ? 'compose' : 'queue',
             });
           },
-        }, student ? '告诉老师影响情绪的原因' : '处理本节课堂的情绪反馈'),
+        }, student ? '给老师写条反馈' : '处理本节课堂的情绪反馈'),
         student ? studentFeedback() : view.value === 'overview' ? statistics() : null,
         !student && view.value === 'overview' ? h('div', { class: 'guide-actions' }, [h('button', { class: 'secondary-button', onClick: () => emit('navigate', { tab: 'dashboard', sessionId: Number(selected.value), courseId: current.value.course_id }) }, '打开本节实时看板'), h('button', { class: 'quiet-button', onClick: () => emit('navigate', { tab: 'reports', courseId: current.value.course_id }) }, '查看课程统计')]) : null,
         !student && view.value === 'overview' ? h(CameraPanel, { key: `${selected.value}:${current.value.status}`, sessionId: Number(selected.value), ongoing: current.value.status === 'ONGOING', onExpired: () => emit('expired'), onSaved: refreshAiFeedback }) : null,

@@ -37,7 +37,7 @@ const mount = (component, props) => { const root = node('root'), app = renderer.
   assert(text(mounted.root).includes('本时段最多：开心'));
   slider().props.onInput({target:{value:'2'}});await nextTick();assert(text(mounted.root).includes('本时段最多：低落'));
   playButton().props.onClick();await nextTick();assert.equal(slider().props.value,0);assert.equal(timers.size,1);
-  [...timers.values()][0].fn();await nextTick();assert(text(mounted.root).includes('没有反馈记录，不代表大家都是平静'));
+  [...timers.values()][0].fn();await nextTick();assert(text(mounted.root).includes('这段时间还没有反馈'));
   [...timers.values()][0].fn();await nextTick();assert.equal(timers.size,0);assert.equal(playButton().props['aria-pressed'],false);
   slider().props.onInput({target:{value:'0'}});await nextTick();
   find(mounted.root,n=>n.props['aria-label']==='下个有反馈时刻').props.onClick();await nextTick();assert.equal(slider().props.value,2);

@@ -218,8 +218,8 @@ export const FeedbackCenter = {
         h('div', [
           h('h2', { tabindex: -1, ref: heading }, '情绪反馈处理中心'),
           h('p', staff
-            ? '查看课堂情绪反馈，回应学习困难，回访教学调整。'
-            : '告诉老师是什么影响了你的课堂体验，并跟进老师的回应。',
+            ? '在这里查看学生的反馈、回复或发回访。'
+            : '遇到什么问题可以写给老师，之后也能回来看看回复。',
           ),
         ]),
         !staff && page.value !== 'compose' && button('提交新反馈', compose, {
@@ -227,7 +227,7 @@ export const FeedbackCenter = {
         }),
       ]),
       renderTabs(),
-      dirty.value && notice('当前有未保存的编辑。保存或取消后可以切换页面。', 'info'),
+      dirty.value && notice('这段内容还没保存。保存或取消后再切换页面。', 'info'),
       notice(announcement.value, 'good'),
       notice(catalog.error.value),
       catalog.error.value && actions(button('重新加载课堂', () => catalog.load())),

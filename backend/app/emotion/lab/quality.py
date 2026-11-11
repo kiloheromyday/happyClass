@@ -82,12 +82,12 @@ def inspect_session(item, settings):
     if item['integrity']['before_start']:
         issues.append(issue(
             'BEFORE_SESSION', 'WARNING', '存储中有早于开课的记录',
-            '这些记录没有纳入本次课堂时间窗口。',
+            '这些记录在所选时段之外。',
         ))
     if item['integrity']['after_window']:
         issues.append(issue(
             'OUTSIDE_CLASS_WINDOW', 'INFO', '存在所选窗口以外的记录',
-            '课后记录是否纳入由方案配置决定，窗口外记录不纳入汇总。',
+            '要算课后记录，可在方案里调整时间范围。',
         ))
     if item['integrity']['missing_confidence']:
         issues.append(issue(

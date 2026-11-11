@@ -56,7 +56,7 @@ const CandidatePreview = {
         ['纳入数量', chosen.value.length + ' / ' + props.item.members.length],
       ]),
       notice(props.item.count > props.item.included_count ? '本建议包含 ' + props.item.count + ' 条候选。先展示最早的 50 条。' : '', 'info'),
-      h('p', { class: 'ef-meta' }, '请核对具体诉求后再创建处理组。同一原因的反馈可能需要不同回应。'),
+      h('p', { class: 'ef-meta' }, '建组前先看一下每条反馈，确认它们适合一起回。'),
       actions(
         button('全选', () => { ids.value = props.item.members.map(item => item.id); }),
         button('清空', () => { ids.value = []; }),
@@ -160,7 +160,7 @@ export const FeedbackSuggestions = {
         data.suggestion_count > items.value.length && notice('当前展示匹配度靠前的 ' + items.value.length + ' 个建议。可缩小课堂范围。', 'info'),
         items.value.length
           ? h('ul', { class: 'ef-list' }, items.value.map(card))
-          : empty('当前范围没有达到条件的建议', '可扩大课堂范围、降低起始条数，或从反馈列表手动选组。'),
+          : empty('当前范围没有达到条件的建议', '可以扩大课堂范围、调低最少条数，或在列表里自己勾选。'),
       ];
     }
 
@@ -174,7 +174,7 @@ export const FeedbackSuggestions = {
         onCreate: value => emit('create', value),
       })
       : section('同类反馈分组建议', [
-        h('p', { class: 'ef-meta' }, '按同一课堂和反馈原因整理进行中的反馈。生成建议不会修改任何反馈。'),
+        h('p', { class: 'ef-meta' }, '这里列出同一节课里原因相近的反馈，建不建组由你决定。'),
         controls(),
         notice(report.error.value),
         report.loading.value && notice('正在整理同类反馈…', 'info'),

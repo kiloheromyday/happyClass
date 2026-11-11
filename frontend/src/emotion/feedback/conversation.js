@@ -146,9 +146,9 @@ export const FeedbackConversation = {
         field(editing.value ? '修订内容' : note ? '教师内部备注' : '回复内容',
           textarea(draft.values.content, value => { draft.values.content = value; }, {
             required: true,
-            placeholder: note ? '记录后续处理安排' : '写下你的回应',
+            placeholder: note ? '写下你准备怎么处理' : '写下你的回应',
           }),
-          (note ? '学生不可见。' : '这条交流仅在本反馈单中展示。') + ' ' + draft.values.content.length + ' / 2000',
+          (note ? '学生不可见。' : '对方会在这条反馈里看到。') + ' ' + draft.values.content.length + ' / 2000',
         ),
         actions(
           submit(editing.value ? '保存修订' : note ? '保存内部备注' : '发送回应', command.busy.value || !draft.values.content.trim()),

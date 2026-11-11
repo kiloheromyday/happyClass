@@ -5,7 +5,7 @@ const names = { STANDARD: '标准模式', ANONYMOUS: '匿名展示', AGGREGATE: 
 const explanations = {
   STANDARD: '任课教师和管理员可查看反馈明细及账号。AI 记录始终不关联学生身份。',
   ANONYMOUS: '教师和管理员的表情历史、看板明细与 CSV 隐藏账号和设备标识。',
-  AGGREGATE: '教师和管理员仅查看统计，不提供逐条反馈历史或明细 CSV。学生仍能查看自己的历史。',
+  AGGREGATE: '教师和管理员只看统计。学生还能查看自己的记录。',
 };
 
 export const PrivacyPanel = {
@@ -84,11 +84,11 @@ export const PrivacyPanel = {
         h('h3', `当前：${names[policy.value.mode]}`),
         staff ? h('form', { onSubmit: save }, [
           h('label', { class: 'field' }, [h('span', '课堂反馈模式'), h('select', { name: 'privacy_mode', value: draft.value, disabled: saving.value || exporting.value, onChange: event => draft.value = event.target.value }, Object.entries(names).map(([value, label]) => h('option', { value }, label)))]),
-          h('p', explanations[draft.value]), h('p', { class: 'data-note' }, '已有反馈后只能提高保护等级。历史记录不会被删除，隐私设置更新后适用于后续查询。'),
+          h('p', explanations[draft.value]), h('p', { class: 'data-note' }, '这节课已经有反馈时，标准可以改成匿名或聚合，匿名可以改成聚合。保存后，原有记录会按新设置显示。'),
           h('div', { class: 'report-actions' }, [h('button', { class: 'primary-button', disabled: !dirty.value || saving.value || exporting.value }, saving.value ? '正在保存…' : '保存隐私设置'), h('button', { type: 'button', class: 'secondary-button', disabled: !dirty.value || saving.value, onClick: () => draft.value = policy.value.mode }, '放弃隐私草稿')]),
         ]) : h('p', explanations[policy.value.mode]),
         h('p', { class: 'data-note' }, '匿名展示不等于数据库不可关联作者：后台仍保存人工反馈归属，用于本人历史、权限和防重复；模型输出也不能作为心理诊断。'),
-        staff ? h('div', [h('button', { class: 'secondary-button', disabled: exporting.value || saving.value || dirty.value, onClick: exportAggregate }, exporting.value ? '正在导出…' : '导出本节聚合 CSV'), h('p', { class: 'data-note' }, '包含本节全部人工与 AI 记录（含演示），仅输出情绪、来源和数量。')]) : null,
+        staff ? h('div', [h('button', { class: 'secondary-button', disabled: exporting.value || saving.value || dirty.value, onClick: exportAggregate }, exporting.value ? '正在导出…' : '导出本节聚合 CSV'), h('p', { class: 'data-note' }, 'CSV 按情绪和来源统计条数，包含这节课的手动、AI 和演示记录。')]) : null,
       ]) : null,
       admin ? h('section', { class: 'chart-panel privacy-settings' }, [h('h3', 'AI 异步处理'), h('button', { class: 'secondary-button', disabled: queueBusy.value, onClick: queueStatus }, queueBusy.value ? '正在刷新…' : '刷新队列状态'), queue.value ? [
         h('p', !queue.value.enabled ? '异步处理尚未启用，当前仍可使用原有同步识别。' : !queue.value.ready ? '队列暂时不可用，已接收任务将由恢复后的工作进程继续处理。' : `等待或处理中：${queue.value.queued_or_pending} 个任务`),

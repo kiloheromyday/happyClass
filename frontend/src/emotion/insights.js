@@ -143,11 +143,11 @@ export const InsightsPanel = {
           h('div',{class:'insight-signals'},data.value.signals.length?data.value.signals.map(signal=>h('article',{class:'insight-signal',key:signal.id},[
             h('span',{class:'insight-signal-icon','aria-hidden':'true'},'✦'),h('div',[h('span',{class:'insight-chip'},originNames[signal.source]),h('h4',`${clock(signal.from_time)}–${clock(signal.to_time)} · 连续关注时段`),h('p',`${signal.total} 条记录中，${signal.concern_count} 条属于关注类别（${percent(signal.concern_ratio)}）。`),h('small',signal.phase_titles.length?`关联环节：${signal.phase_titles.join('、')}`:'可在下方标注这一时段对应的教学环节。')]),
             h('button',{class:'secondary-button',disabled:dirty.value||busy.value,onClick:()=>propose(signal)},'记录一次教学调整'),
-          ])):h('div',{class:'insight-empty'},[moodFace('NEUTRAL',42),h('p',data.value.summary.total?'当前没有达到规则的连续时段。未触发不代表课堂一定没有问题。':'当前范围暂无反馈记录，可调整数据范围或来源。')]))
+          ])):h('div',{class:'insight-empty'},[moodFace('NEUTRAL',42),h('p',data.value.summary.total?'目前没有连续时段达到提示条件。':'当前范围暂无反馈记录，可调整数据范围或来源。')]))
         ]),
         h('section',{class:'insight-card'},[
           h('div',{class:'insight-section-heading'},[h('div',[h('p',{class:'eyebrow'},'02 / EMOTION MAP'),h('h3','沿着课堂时间，寻找线索')]),h('button',{class:'quiet-button',disabled:dirty.value||busy.value,onClick:()=>emit('navigate',{tab:'replay',sessionId:Number(selected.value)})},'打开卡通情绪回放 →')]),
-          h('p',{class:'muted'},'颜色越深表示关注类别占比越高。灰色表示无记录；不足样本和未完整时段不会触发规则。'),
+          h('p',{class:'muted'},'颜色越深，关注类别的占比越高。灰色表示没有记录。记录数够多、时段结束后才会判断。'),
           ...Object.entries(originNames).map(([code,name])=>h('div',{class:'insight-map-row'},[h('strong',name),h('div',{class:'insight-map-track'},data.value.frames.map((frame,index)=>{
             const metric=frame.sources[code];
             return h('button',{class:['insight-map-cell',{selected:index===activeFrame.value,empty:!metric.total,thin:metric.total<data.value.rules.min_records}],type:'button',style:{'--concern-opacity':metric.total?String(.16+(metric.concern_ratio||0)*.78):'0'},title:`${clock(frame.from_time)} · ${metric.total} 条 · ${percent(metric.concern_ratio)}`,'aria-label':`${name} ${clock(frame.from_time)}，${metric.total} 条，关注占比 ${percent(metric.concern_ratio)}`,'aria-pressed':index===activeFrame.value,onClick:()=>activeFrame.value=index},h('span',{class:'sr-only'},`${index+1}`));
@@ -183,12 +183,12 @@ export const InsightsPanel = {
               item.outcome?h('p',{class:'insight-outcome'},`教师复盘：${item.outcome}`):null,
               h('div',{class:'insight-form-actions'},[h('button',{class:'quiet-button',disabled:dirty.value||busy.value,onClick:()=>edit(item)},'编辑与补充复盘'),confirmingDelete.value===item.id?h('span',[h('button',{class:'quiet-button',disabled:busy.value||dirty.value,onClick:()=>remove(item)},'确认删除'),h('button',{class:'quiet-button',onClick:()=>confirmingDelete.value=null},'取消')]):h('button',{class:'quiet-button',disabled:busy.value||dirty.value,onClick:()=>confirmingDelete.value=item.id},'删除')]),
             ])):h('div',{class:'insight-empty'},[icon('book',34),h('p','还没有教学调整记录。从左侧添加，或从关注时段生成一条计划。')]),
-            h('p',{class:'insight-method-note'},'前后变化仅描述已有记录，不证明调整造成了变化；AI 分类和主动表达不能直接等同。'),
+            h('p',{class:'insight-method-note'},'前后对比按来源分开算，可以结合当时的课堂情况一起看。'),
           ]),
         ]),
         h('details',{class:'insight-card insight-rules'},[
           h('summary','洞察规则与计算方法'),
-          h('p',{class:'muted'},'规则由任课教师设置，作为课堂跟进线索。新规则会重新计算已有记录；不会修改原始情绪数据。空白时段会打断连续判断。'),
+          h('p',{class:'muted'},'老师可以修改提示条件。保存后会用原记录重新计算。中间有空白时段时，会重新开始计数。'),
           ruleDraft.value?h('form',{onSubmit:saveRules},[
             select('每段时长','insight_rule_bucket',String(ruleDraft.value.bucket_minutes),value=>changeRule('bucket_minutes',Number(value)),[['1','1 分钟'],['5','5 分钟'],['10','10 分钟']]),
             ...[['min_records','每段最少记录',3,1000,1],['concern_ratio','关注类别占比阈值',.3,1,.05],['consecutive_windows','连续完整时段数',2,6,1]].map(([key,title,min,max,step])=>h('label',{class:'field'},[h('span',title),h('input',{type:'number',name:`insight_rule_${key}`,value:ruleDraft.value[key],min,max,step,required:true,disabled:busy.value,onInput:event=>changeRule(key,Number(event.target.value))})])),
@@ -196,7 +196,7 @@ export const InsightsPanel = {
           ]):null,
           h('p',{class:'insight-method-note'},`按反馈次数分析，不进行学生身份匹配。默认关注分类为低落、生气、担忧、反感；平静与惊讶不自动归为问题。当前隐私模式：${{STANDARD:'标准',ANONYMOUS:'匿名',AGGREGATE:'仅聚合'}[data.value.privacy_mode]}。超长课堂最多生成 360 段，必要时自动合并粒度。`),
         ]),
-        h('p',{class:'insight-footer'},`快照 ${stamp(data.value.updated_at)} · 北京时间 · 规则 v${data.value.rules.version} · 点击刷新获取新数据`),
+        h('p',{class:'insight-footer'},`更新于 ${stamp(data.value.updated_at)} · 北京时间 · 规则 v${data.value.rules.version}`),
       ]):!loading.value&&!error.value?h('p',{class:'insight-empty'},'请选择有权限访问的课堂。'):null,
     ]);
   },

@@ -13,7 +13,7 @@ SOURCE_NAMES = {'MANUAL': '学生主动反馈', 'AI': 'AI 识别记录'}
 SECTION_NAMES = {
     'FINDING': '关键发现',
     'CONTEXT': '课堂背景',
-    'LIMITATION': '解读边界',
+    'LIMITATION': '阅读说明',
     'NEXT_STEP': '后续行动',
 }
 
@@ -47,7 +47,7 @@ def csv_report(report):
     row('报告编号', report['id'], '方案编号', report['study_id'])
     row('快照指纹', report['fingerprint'])
     row('引擎版本', data['engine_version'], '数据采集快照', data['captured_at'])
-    row('记录截止边界（不含）', data['recorded_before'])
+    row('记录截止时间（不含这一刻）', data['recorded_before'])
     row('统计单位', data['methodology']['unit'])
     row('研究问题', report['definition']['question'])
     row('教师结论', report['conclusion'])
@@ -266,7 +266,7 @@ def html_report(report):
         f'<p>{cell(report["definition"]["question"])}</p>'
         f'<p class="meta">报告 #{report["id"]} · {cell(data["captured_at"])} · {cell(data["engine_version"])}</p>'
         f'<p class="fingerprint">SHA-256：{cell(report["fingerprint"])}</p></header>'
-        f'<section><h2>分析摘要</h2><ul>{findings}</ul><p class="notice">按反馈记录次数分析，不代表人数。来源分别计算，结果不用于心理诊断或因果归因。</p></section>'
+        f'<section><h2>分析摘要</h2><ul>{findings}</ul><p class="notice">按反馈条数统计，手动反馈和 AI 分开计算。可以结合课堂情况读这份报告。</p></section>'
         + session_section(data)
         + ''.join(source_section(data, source) for source in SOURCES)
         + alignment_section(data)

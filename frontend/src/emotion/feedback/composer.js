@@ -209,10 +209,10 @@ export const FeedbackComposer = {
           required: true,
           minlength: 2,
           maxlength: 120,
-          placeholder: '例如：希望再演示一次队列的入队操作',
+          placeholder: '比如：想再看一遍怎么入队',
         })),
         field('想让老师知道什么？', textarea(values.content, value => { values.content = value; }, {
-          placeholder: '说说发生在什么环节，你希望老师怎样帮助。',
+          placeholder: '哪一段没跟上？希望老师怎么帮你？',
           required: values.reasons.includes('OTHER'),
         }), values.content.length + ' / 2000'),
         optionalFields(),
@@ -272,7 +272,7 @@ export const FeedbackComposer = {
     return () => section(
       props.item ? '编辑反馈' : '提交课堂情绪反馈',
       !props.item && !props.catalog.sessions.length
-        ? empty('暂无可选课堂', '加入课堂后，可以在这里向任课教师发送反馈。', button('返回', cancel))
+        ? empty('暂无可选课堂', '先加入一节课，再来给老师写反馈。', button('返回', cancel))
         : step.value === 'write' ? editForm() : previewForm(),
       badge('教师端隐藏账号身份'),
     );

@@ -47,7 +47,7 @@ def storage(user):
         'archived_studies': studies[1],
         'study_limit': 100,
         'job_states': jobs,
-        'note': '字节数仅统计当前账号的聚合结果和批注正文，不代表整个数据库文件大小。',
+        'note': '这里的大小只算你保存的汇总结果和批注。',
     }
 
 
@@ -117,7 +117,7 @@ def check_snapshot(identifier, user):
             'DEMO_COUNT',
             '演示标记总数一致',
             sum(item['demo_count'] for item in data['sessions']) == data['summary']['demo_records'],
-            '核对被纳入分析的合成演示记录数量。',
+            '核对报告里用了多少条演示记录。',
         )
         check(
             'SETTINGS',
@@ -132,7 +132,7 @@ def check_snapshot(identifier, user):
             'stored_fingerprint': report['fingerprint'],
             'computed_fingerprint': computed,
             'checks': checks,
-            'note': '内部一致性校验不代表情绪分类本身正确，也不是第三方数字签名。',
+            'note': '这项检查用于确认报告内容与保存时一致。',
         }
 
 

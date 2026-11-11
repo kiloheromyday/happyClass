@@ -107,7 +107,7 @@ def parser():
     source.add_argument('--image', help='Single JPEG for a reproducible check; no camera access')
     result.add_argument('--session-id', required=True, type=int)
     result.add_argument('--device-id', required=True)
-    result.add_argument('--delivery', choices=['sync', 'queue'], default='sync', help='queue acknowledges acceptance; the worker stores results asynchronously')
+    result.add_argument('--delivery', choices=['sync', 'queue'], default='sync', help='Use queue to send results to the worker for storage')
     result.add_argument('--interval', type=float, default=3, help='Sampling interval, 3 to 60 seconds')
     result.add_argument('--max-frames', type=int, default=0, help='0 for continuous capture; image mode always submits once')
     result.add_argument('--backend-url', type=trusted_url, default='http://127.0.0.1:18080')

@@ -74,7 +74,7 @@ export const FeedbackProgress = {
           ['当前状态持续时间', isTerminal(data.current.state) ? '—' : duration(data.current.duration_hours)],
           ['目标时间', date(next.deadline)],
         ]),
-        next.overdue && notice('已超过目标时间。', 'waiting'),
+        next.overdue && notice('已经超过截止时间。', 'waiting'),
         target && actions(button(target.text, () => emit('tab', target.tab), { primary: true })),
       ];
     }
@@ -91,7 +91,7 @@ export const FeedbackProgress = {
     function visits(data) {
       const page = slice.value;
       return [
-        h('p', { class: 'ef-meta' }, '共 ' + data.total_visits + ' 次进入状态。处理中的一段会随刷新更新。'),
+        h('p', { class: 'ef-meta' }, '共 ' + data.total_visits + ' 次进入状态。刷新可以更新当前阶段的耗时。'),
         data.total_visits > page.total && notice('这里展示最近 ' + page.total + ' 段状态，完整事件可到时间线查看。', 'info'),
         table(['状态', '触发动作', '开始', '结束', '持续时间'], page.items.map(item => ({
           id: item.state + item.started_at + item.entered_by,

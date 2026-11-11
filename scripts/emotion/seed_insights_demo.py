@@ -69,5 +69,5 @@ if __name__=='__main__':
     parser.add_argument('--confirm-demo-data',action='store_true',help='Explicitly create synthetic records in this database')
     args=parser.parse_args()
     if not args.confirm_demo_data:
-        parser.error('请显式添加 --confirm-demo-data；本命令会新增独立的合成演示课程和反馈')
+        parser.error('这条命令会创建演示课程和反馈。确认后加上 --confirm-demo-data')
     print(seed(args.teacher))

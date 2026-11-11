@@ -102,7 +102,7 @@ const BatchForm = {
         allowed.value.length ? h('ul', { class: 'ef-list' }, props.group.members.map(item => h('li', { key: item.id }, [
           check(item.number + ' · ' + item.title, values.case_ids.includes(item.id), value => toggle(item.id, value), !eligible(item, values.action)),
           h('p', { class: 'ef-meta' }, item.state_label + (eligible(item, values.action) ? '' : ' · 当前状态不支持所选操作')),
-        ]))) : empty('当前组中没有可执行此操作的反馈'),
+        ]))) : empty('这组反馈暂时都不能执行这个操作'),
       ];
     }
 
@@ -343,7 +343,7 @@ export const FeedbackGroups = {
             h('p', { class: 'ef-meta' }, groupLabel(item) + ' · ' + date(item.updated_at)),
             item.description && h('p', { class: 'ef-text' }, item.description),
           ])))
-          : !listing.loading.value && empty('暂无处理组', '可从反馈列表选中同一节课堂的反馈来创建。'),
+          : !listing.loading.value && empty('暂无处理组', '到反馈列表勾选同一节课的几条反馈，就能建组。'),
       ], actions(
         button('刷新', load, { disabled: listing.loading.value }),
         button('查看分组建议', () => { mode.value = 'suggestions'; }),

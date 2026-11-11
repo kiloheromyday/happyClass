@@ -102,7 +102,7 @@ export const SavedFilters = {
             button('删除', () => remove(item), { disabled: command.busy.value }),
           ),
         ])))
-        : h('p', { class: 'ef-meta' }, '可以把经常使用的筛选保存下来。'),
+        : h('p', { class: 'ef-meta' }, '把常用筛选存起来，下次直接用。'),
       open.value ? h('form', { class: 'ef-form', onSubmit: save }, [
         field('视图名称', input(draft.values.title, value => { draft.values.title = value; }, {
           required: true, minlength: 2, maxlength: 80,
@@ -190,7 +190,7 @@ export const FeedbackQueue = {
         !listing.loading.value && !listing.error.value && page && (
           page.items.length
             ? recordList(page.items, props.catalog, id => emit('open', id), extra)
-            : empty('没有符合条件的反馈', '可调整筛选，或返回查看全部课堂。')
+            : empty('没有符合条件的反馈', '换个筛选条件，或查看全部课堂。')
         ),
         pager(page, listing.loading.value, load),
       ];

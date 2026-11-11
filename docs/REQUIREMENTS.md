@@ -31,7 +31,7 @@
 
 使用服务端 Session，不使用 JWT，两者均符合参考认证选择。看板使用轮询，不使用 WebSocket。教师和管理员不能通过公开注册自行选择特权角色。接口以本项目 OpenAPI 为准，参考中的路径是示例；独立结果接收采用 `/api/ai/emoji-results`。
 
-0.22.0 已加入课堂匿名与聚合模式、Redis Streams 异步结果处理、MCP stdio 工具、Compose 与 CI 配置。它们属于选做扩展；Docker 和远程 CI 的实际运行状态需另行验收，说明见 OPTIONAL_EXTENSIONS.md，不能将配置存在当作已部署成功。
+0.22.0 加了指导书 2.3 的四项选做功能。课堂可以匿名展示或只显示统计，AI 结果可以走 Redis 队列，也可以通过 MCP 客户端调用模型。Compose 已在本机运行，主分支的 GitHub Actions 也已通过。具体操作见[选做扩展](OPTIONAL_EXTENSIONS.md)。
 
 ## 尚待完成的实际验收和材料
 

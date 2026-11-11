@@ -102,7 +102,7 @@ function responseCards(data) {
       duration(current[key + '_median_hours'], current[key + '_samples']),
       duration(previous[key + '_median_hours'], previous[key + '_samples']),
     ],
-  })), '从提交时开始计算，尚未完成相应动作的反馈不计入该项。');
+  })), '耗时从提交算起，只统计已经完成这一步的反馈。');
 }
 
 const courseSorts = [

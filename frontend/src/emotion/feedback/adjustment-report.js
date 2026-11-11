@@ -23,7 +23,7 @@ const statuses = {
   DONE: '已完成',
   CANCELLED: '已取消',
 };
-const basis = '每条关联反馈取建立关联后发起的最新一轮未取消回访。学生可以同时反馈多项教学调整。';
+const basis = '每条反馈看关联调整后发起的最后一次未取消的回访。一条反馈可能关联多项调整。';
 
 function period(item) {
   const end = item.end_minute === null ? '' : '至第 ' + item.end_minute + ' 分钟';
@@ -203,7 +203,7 @@ export const FeedbackAdjustmentReport = {
         page && summary(page.totals),
         page?.items.length
           ? reportTable(page.items)
-          : !resource.loading.value && empty('当前范围没有关联的教学调整', '可在反馈详情中关联本课堂的教学调整。'),
+          : !resource.loading.value && empty('这里还没有关联的教学调整', '可在反馈详情中关联本课堂的教学调整。'),
         pager(page, resource.loading.value, load),
       ], button(exportBusy.value ? '取消导出' : '导出调整统计', exportData, {
         disabled: !exportBusy.value && !page?.total,
