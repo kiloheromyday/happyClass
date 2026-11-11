@@ -51,54 +51,6 @@
 
 加入码只在添加课程时使用；个人笔记和回顾由本人查看；好友学伴是普通学生之间的关系。表情反馈条数、参与人数和四项评分份数分别统计。
 
-### 学生：写下哪里没跟上
-
-从侧栏打开「情绪反馈处理中心」，选一节课、选表情，再写遇到的问题。比如例题第二步没跟上，可以告诉老师具体卡在哪。
-
-![学生端的反馈中心入口，蓝框标出侧栏入口和提交按钮](docs/emotion/images/01-feedback-entry.png)
-
-[查看提交步骤](docs/emotion/guide/submit-feedback.md)
-
-### 教师：追问、回复和回访
-
-老师从「待办」打开反馈。想问清楚时，点「请学生补充」。处理后可以发回访，学生确认改善后，这条反馈会结案。
-
-![教师的反馈处理页，蓝框标出追问入口、说明和确认按钮](docs/emotion/images/04-teacher-asks.png)
-
-[查看教师处理](docs/emotion/guide/ask-student.md) · [查看回访和结案](docs/emotion/guide/review-feedback.md)
-
-### 教师：一起回复相似反馈
-
-同一节课有几条类似反馈，可以先核对内容、勾选建组，再写一条共同回复。每位学生在自己的反馈里收到回应。
-
-![批量回应预览，蓝框标出发给学生的内容和确认按钮](docs/emotion/images/09-batch-reply.png)
-
-[查看分组和批量回应](docs/emotion/guide/batch-feedback.md)
-
-### 情绪回放：拖到想看的课堂时段
-
-教师和管理员可以拖时间轴、点柱子或直接播放，查看某一段有几条反馈、哪类表情最多。
-
-![情绪回放页面，蓝框标出时段统计、播放按钮和时间轴](docs/emotion/images/10-replay.png)
-
-[查看回放操作](docs/emotion/guide/replay-emotion.md)
-
-### 情绪洞察：记下补讲，再看前后的反馈
-
-记录某个时间点做了什么调整，例如补讲一道题。保存后，页面会分别显示手动反馈和 AI 记录在调整前后的统计。
-
-![补讲记录和前后对比，蓝框标出调整标题和两种来源的统计](docs/emotion/images/11-insights.png)
-
-[查看教学调整和前后对比](docs/emotion/guide/teaching-insights.md)
-
-### 反馈隐私：按课堂设置展示范围
-
-任课老师或管理员可以为一节课选「匿名展示」或「仅聚合展示」。学生仍能在自己的历史里查看反馈。
-
-![反馈隐私设置，蓝框标出选课堂、选模式和保存按钮](docs/emotion/images/12-privacy.png)
-
-[查看隐私设置步骤](docs/emotion/guide/feedback-privacy.md)
-
 ## 本地启动
 
 已验证 Windows PowerShell、Python 3.13、Node.js 22.12 及以上。后端使用 FastAPI，前端使用 Vue 3 / Vite，数据库为 SQLite，无需另装数据库服务。
